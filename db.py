@@ -10,8 +10,10 @@ class DocDatabase(object):
     self.password = password
     self.host = host
     self.entity_types = {
-      'polymer electrolyte': "A polymer matrix capable of ion conduction, for example 'polyethylene oxide', 'polyvinyl alcohol', 'polymethyl methacrylate', 'polycaprolactone', 'polychitosan', 'polyvinyl pyrrolidone', 'polyvinyl chloride', 'polyvinylidene fluoride', 'polyimide'",
-      'material invention': "material invention item, for example 'polymer', 'plasticizer', 'electrolyte'",
+      'polymer electrolyte': "exact polymer type, for example 'polyethylene oxide', 'polyvinyl alcohol', 'polymethyl methacrylate', 'polycaprolactone', 'polychitosan', 'polyvinyl pyrrolidone', 'polyvinyl chloride', 'polyvinylidene fluoride', 'polyimide'",
+      'invention': "material invention item, for example 'polymer', 'plasticizer', 'electrolyte'",
+      'field': "material application field, for example 'batteries', 'capacitors', 'sensors', 'condensers', 'electrochromic elements', 'photoelectric conversion elements'",
+      'accident': "accident type, for example 'catching on fire', 'burning', 'exploding'",
       ''
     }
     self.relation_types = {
