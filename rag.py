@@ -4,7 +4,10 @@ from db import DocDatabase
 
 class RAG(object):
   def __init__(self, doc_dir = None):
-    self.query_engine = DocDatabase().load_doc(doc_dir)
+    if doc_dir is not None:
+      self.query_engine = DocDatabase().load_doc(doc_dir)
+    else:
+      self.query_engine = DocDatabase().load_doc()
   def query(self, question):
     response = self.query_engine.query(question)
     return response
