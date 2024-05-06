@@ -19,5 +19,7 @@ class DocDatabase(object):
     documents = SimpleDirectoryReader(doc_dir)
     graph_store = SimpleGraphStore()
     storage_context = StorageContext.from_default(graph_store = graph_store)
-    kdb = KnowledgeGraphIndex.from_documents(documents, max_triples_per_chunk = 2, storage_context = storage_context)
-    
+    self.kdb = KnowledgeGraphIndex.from_documents(documents, max_triples_per_chunk = 2, storage_context = storage_context)
+    query_engine = self.kdb.as_query_engine(include_text = False, response_mode = 'tree_summarize')
+    return query_engine
+
