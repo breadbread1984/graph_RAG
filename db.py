@@ -1,55 +1,23 @@
 #!/usr/bin/python3
 
-from langchain.graphs import Neo4jGraph
-from langchain.vectorstores.neo4j_vector import Neo4jVector
-from langchain.embedding.huggingface import HuggingFaceEmbedding
+from os import listdir, walk
+from os.path import splitext, join, exists
+from tqdm import tqdm
+from llama_index.core import SimpleDirectoryReader, KnowledgeGraphIndex
+from llama_index.core import StorageContext
+from llama_index.core.graph_stores import SimpleGraphStore
 
 class DocDatabase(object):
-  def __init__(self, username = 'neo4j', password = None, host = 'localhost'):
-    self.username = username
-    self.password = password
-    self.host = host
-    self.entity_types = {
-      'polymer electrolyte': "exact polymer type, for example 'polyethylene oxide', 'polyvinyl alcohol', 'polymethyl methacrylate', 'polycaprolactone', 'polychitosan', 'polyvinyl pyrrolidone', 'polyvinyl chloride', 'polyvinylidene fluoride', 'polyimide'",
-      'invention': "material invention item, for example 'polymer', 'plasticizer', 'electrolyte'",
-      'field': "material application field, for example 'batteries', 'capacitors', 'sensors', 'condensers', 'electrochromic elements', 'photoelectric conversion elements'",
-      'accident': "accident type, for example 'catching on fire', 'burning', 'exploding'",
-      ''
-    }
-    self.relation_types = {
-    }
-    self.entity_relationship_match = {
-    }
+  def __init__(self):
+    pass
   @staticmethod
   def load_db(db_dir):
-    vectordb = Neo4jVector.from_existsing_graph(
-      HuggingFaceEmbeddings(model_name = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"),
-      url = 'localhost',
-      username = self.username,
-      password = self.password,
-      index_name = 'tasks',
-      node_label = 'Task',
-      text_node_properties = ['name', 'description', 'status'],
-      embedding_node_property = 'embedding',)
-    return vectordb
+    raise NotImplemented
   @staticmethod
   def load_doc(doc_dir, db_dir):
     print('load pages of documents')
-    docs = list()
-    for root, dirs, files in tqdm(walk(doc_dir)):
-      for f in files:
-        stem, ext = splitext(f)
-        loader_types = {'.md': UnstructuredMarkdownLoader,
-                        '.txt': UnstructuredFileLoader,
-                        '.pdf': UnstructuredPDFLoader}
-        loader = loader_types[ext](join(root, f), mode = "single", strategy = "fast")
-        # load pages of a document to a list
-        docs.extend(loader.load())
-    # 2) split pages into chunks and save to split_docs
-    print('split pages into chunks')
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size = 500, chunk_overlap = 150)
-    split_docs = text_splitter.split_documents(docs)
-    # 3) encode strings to feature vectors
-    print('encode strings to feature vectors')
-    # NOTE: alternative model "distilbert/distilbert-base-uncased"
+    documents = SimpleDirectoryReader(doc_dir)
+    graph_store = SimpleGraphStore()
+    storage_context = StorageContext.from_default(graph_store = graph_store)
+    kdb = KnowledgeGraphIndex.from_documents(documents, max_triples_per_chunk = 2, storage_context = storage_context)
     
