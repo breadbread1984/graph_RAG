@@ -61,7 +61,7 @@ class DocDatabase(object):
     return query_engine
   def visualize(self, kdb, output_html = 'example.html'):
     from pyvis.network import Network
-    g = kdb.get_network_graph()
+    g = kdb.get_networkx_graph()
     net = NetWork(notebook = True, cdn_resources = "in_line", directed = True)
     net.from_nx(g)
     net.show(output_html)
