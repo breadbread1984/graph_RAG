@@ -19,7 +19,12 @@ class DocDatabase(object):
     documents = SimpleDirectoryReader(doc_dir)
     graph_store = SimpleGraphStore()
     storage_context = StorageContext.from_default(graph_store = graph_store)
-    self.kdb = KnowledgeGraphIndex.from_documents(documents, max_triples_per_chunk = 2, storage_context = storage_context)
-    query_engine = self.kdb.as_query_engine(include_text = False, response_mode = 'tree_summarize')
-    return query_engine
-
+    kdb = KnowledgeGraphIndex.from_documents(documents, max_triples_per_chunk = 2, storage_context = storage_context, include_embeddings = True)
+    return kdb
+  @staticmethod
+  def visualize(kdb, output_html = 'example.html'):
+    from pyvis.network import Network
+    g = kdb.get_network_graph()
+    net = NetWork(notebook = True, cdn_resources = "in_line", directed = True)
+    net.from_nx(g)
+    net.show(output_html)
