@@ -23,7 +23,8 @@ class DocDatabase(object):
     return query_engine
   def load_doc(self, doc_dir):
     print('load pages of documents')
-    documents = SimpleDirectoryReader(doc_dir)
+    reader = SimpleDirectoryReader(doc_dir)
+    documents = reader.load_data()
     def messages_to_prompt(message):
       prompt = ''
       for message in messages:
@@ -40,14 +41,8 @@ class DocDatabase(object):
     def completion_to_prompt(completion):
       return f"<|system|>\n</s>\n<|user|>\n{completion}</s>\n<|assistant|>\n"
     service_context = ServiceContext.from_defaults(
-      llm = HuggingFaceLLM(
-        model_name = 'HuggingFaceH4/zephyr-7b-beta',
-        tokenizer_name = 'HuggingFaceH4/zephyr-7b-beta',
-        generate_kwargs={"temperature": 0.7, "top_k": 50, "top_p": 0.95},
-        messages_to_prompt=messages_to_prompt,
-        completion_to_prompt=completion_to_prompt,
-        device_map="auto"),
-      embed_model = HuggingFaceEmbedding(model = 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'),
+      llm = HuggingFaceLLM(model_name = 'HuggingFaceH4/zephyr-7b-beta'),
+      embed_model = HuggingFaceEmbedding(model_name = 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'),
       text_splitter = SentenceSplitter(chunk_size = 1024, chunk_overlap = 20),
       prompt_helper = PromptHelper(
         context_window = 4096,
