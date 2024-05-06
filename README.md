@@ -44,13 +44,12 @@ nebula.service status all
 create space for graph rag
 
 ```shell
-nebula-console -P 9669 -u root -p nebula
+nebula-console -addr 127.0.0.1 -P 9669 -u root -p nebula
 ```
 
 within nebula console
 
 ```shell
-(root@nebula) [(none)]> add hosts 127.0.0.1:9779
 (root@nebula) [(none)]> show hosts
 (root@nebula) [(none)]> CREATE SPACE llamaindex(vid_type=FIXED_STRING(256), partition_num=1, replica_factor=1);
 (root@nebula) [(none)]> SHOW SPACES;
