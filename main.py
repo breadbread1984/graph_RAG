@@ -39,7 +39,7 @@ def main(unused_argv):
         with gr.Row():
           submit_btn = gr.Button("发送")
           clear_btn = gr.ClearButton(components = [chatbot], value = "清空问题")
-      submit_btn.click(warper.query, inputs = [msg, chatbot], outputs = [msg, chatbot])
+      submit_btn.click(wraper.query, inputs = [msg, chatbot], outputs = [msg, chatbot])
   gr.close_all()
   demo.launch(server_name = FLAGS.host, server_port = FLAGS.port)
 
