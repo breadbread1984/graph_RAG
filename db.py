@@ -31,7 +31,7 @@ class DocDatabase(object):
           prompt += f"<|user|>\n{message.content}</s>\n"
         elif message.role == 'assistant':
           prompt += f"<|assistant|>\n{message.content}</s>\n"
-      if not prompt.startswith('<|system|>\n')
+      if not prompt.startswith('<|system|>\n'):
         prompt = "<|system|>\n</s>\n" + prompt
       prompt = prompt + "<|assistant|>\n"
       return prompt
