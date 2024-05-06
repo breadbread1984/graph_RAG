@@ -4,3 +4,4 @@ llama-index-embeddings-instructor
 llama-index-llms-huggingface
 llama-index-graph-stores-nebula
 nebula3-python
+pyvis
