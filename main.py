@@ -20,7 +20,7 @@ class Wraper(object):
   def query(self, question, history):
     try:
       answer = self.rag.query(question)
-      history.append((question, answer['result']))
+      history.append((question, answer))
       return "", history
     except Exception as e:
       return e, history
