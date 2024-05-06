@@ -38,7 +38,7 @@ class DocDatabase(object):
     def completion_to_prompt(completion):
       return f"<|system|>\n</s>\n<|user|>\n{completion}</s>\n<|assistant|>\n"
     storage_context = StorageContext.from_defaults(graph_store = graph_store)
-    service_context = Servicecontext.from_defaults(
+    service_context = ServiceContext.from_defaults(
       llm = HuggingFaceLLM(
         model_name = 'HuggingFaceH4/zephyr-7b-beta',
         tokenizer_name = 'HuggingFaceH4/zephyr-7b-beta',
