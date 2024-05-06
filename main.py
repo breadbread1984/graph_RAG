@@ -12,10 +12,11 @@ def add_options():
   flags.DEFINE_enum('device', default = 'cuda', enum_values = {'cpu', 'cuda'}, help = 'device to use')
   flags.DEFINE_string('host', default = '0.0.0.0', help = 'host address')
   flags.DEFINE_integer('port', default = 8880, help = 'port number')
+  flags.DEFINE_enum('model', default = 'chatglm', enum_values = {'zephyr'}, help = 'model to use')
 
 class Wraper(object):
   def __init__(self):
-    self.rag = RAG(doc_dir = FLAGS.doc_dir)
+    self.rag = RAG(model = FLAGS.model, doc_dir = FLAGS.doc_dir)
   def query(self, question, history)
     try:
       answer = self.rag.query(question)

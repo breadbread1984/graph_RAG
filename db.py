@@ -3,43 +3,25 @@
 from os import listdir, walk, environ
 from os.path import splitext, join, exists
 from tqdm import tqdm
-from llama_index.llms.huggingface import HuggingFaceLLM
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.core.text_splitter import SentenceSplitter
 from llama_index.core import SimpleDirectoryReader, KnowledgeGraphIndex, StorageContext, ServiceContext, PromptHelper
 from llama_index.graph_stores.nebula import NebulaGraphStore
 from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core.retrievers import KnowledgeGraphRAGRetriever
+from models import Zephyr
 
 class DocDatabase(object):
-  def __init__(self):
+  def __init__(self, model = 'zephyr'):
     environ['NEBULA_USER'] = 'root'
     environ['NEBULA_PASSWORD'] = 'nebula'
     environ['NEBULA_ADDRESS'] = 'localhost:9669'
     graph_store = NebulaGraphStore(space_name = 'llamaindex', edge_types = ['relationship'], rel_prop_names = ['relationship'], tags = ['entity'])
     self.storage_context = StorageContext.from_defaults(graph_store = graph_store)
-    def messages_to_prompt(message):
-      prompt = ''
-      for message in messages:
-        if message.role == 'system':
-          prompt += f"<|system|>\n{message.content}</s>\n"
-        elif message.role == 'user':
-          prompt += f"<|user|>\n{message.content}</s>\n"
-        elif message.role == 'assistant':
-          prompt += f"<|assistant|>\n{message.content}</s>\n"
-      if not prompt.startswith('<|system|>\n'):
-        prompt = "<|system|>\n</s>\n" + prompt
-      prompt = prompt + "<|assistant|>\n"
-      return prompt
-    def completion_to_prompt(completion):
-      return f"<|system|>\n</s>\n<|user|>\n{completion}</s>\n<|assistant|>\n"
-    self.llm = HuggingFaceLLM(
-      model_name = 'HuggingFaceH4/zephyr-7b-beta',
-      tokenizer_name = 'HuggingFaceH4/zephyr-7b-beta',
-      generate_kwargs = {"temperature": 0.7, "top_k": 50, "top_p": 0.95},
-      messages_to_prompt=messages_to_prompt,
-      completion_to_prompt=completion_to_prompt,
-      device_map="auto")
+    if model == 'zephyr':
+      self.llm = Zephyr()
+    else:
+      raise Exception('unknown model!')
     self.service_context = ServiceContext.from_defaults(
       llm = self.llm,
       embed_model = HuggingFaceEmbedding(model_name = 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'),
