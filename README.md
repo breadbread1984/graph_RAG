@@ -59,4 +59,11 @@ within nebula console
 (root@nebula) [(none)]> CREATE TAG INDEX entity_index ON entity(name(256));
 ```
 
+## Start service
+
+start service with the following command
+
+```shell
+python3 main.py --doc_dir <path/to/dir/of/pdf> --model (zephyr)
+```
 
