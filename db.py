@@ -15,10 +15,10 @@ class DocDatabase(object):
     environ['NEBULA_PASSWORD'] = 'nebula'
     environ['NEBULA_ADDRESS'] = 'localhost:9669'
   @staticmethod
-  def load_db(db_dir):
+  def load_db():
     raise NotImplemented
   @staticmethod
-  def load_doc(doc_dir, db_dir):
+  def load_doc(doc_dir):
     print('load pages of documents')
     documents = SimpleDirectoryReader(doc_dir)
     graph_store = NebulaGraphStore(space_name = 'llamaindex', edge_types = ['relationship'], rel_prop_names = ['relationship'], tags = ['entity'])
