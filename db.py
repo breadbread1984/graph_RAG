@@ -39,8 +39,8 @@ class DocDatabase(object):
       llm = self.llm,
       verbose = True)
     query_engine = RetrieverQueryEngine.from_args(graph_rag_retriever, service_context = self.service_context)
-    return graph_rag_retriever, query_engine
-  def load_doc(self, doc_dir):
+    return query_engine
+  def load_doc(self, doc_dir, visualize = False):
     print('load pages of documents')
     reader = SimpleDirectoryReader(doc_dir)
     documents = reader.load_data()
@@ -56,9 +56,10 @@ class DocDatabase(object):
       include_embeddings = True
     )
     query_engine = kdb.as_query_engine(include_text = True, retriever_mode = 'keyword', response_mode = "tree_summarize", embedding = 'hybrid', similarity_top_k = 5)
-    return kdb, query_engine
-  @staticmethod
-  def visualize(kdb, output_html = 'example.html'):
+    if visualize:
+      self.visualize(kdb)
+    return query_engine
+  def visualize(self, kdb, output_html = 'example.html'):
     from pyvis.network import Network
     g = kdb.get_network_graph()
     net = NetWork(notebook = True, cdn_resources = "in_line", directed = True)
