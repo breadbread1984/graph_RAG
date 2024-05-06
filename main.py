@@ -17,7 +17,7 @@ def add_options():
 class Wraper(object):
   def __init__(self):
     self.rag = RAG(model = FLAGS.model, doc_dir = FLAGS.doc_dir)
-  def query(self, question, history)
+  def query(self, question, history):
     try:
       answer = self.rag.query(question)
       history.append((question, answer['result']))

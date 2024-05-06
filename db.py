@@ -40,7 +40,7 @@ class DocDatabase(object):
       verbose = True)
     query_engine = RetrieverQueryEngine.from_args(graph_rag_retriever, service_context = self.service_context)
     return query_engine
-  def load_doc(self, doc_dir, visualize = False):
+  def load_doc(self, doc_dir, visualize = True):
     print('load pages of documents')
     reader = SimpleDirectoryReader(doc_dir)
     documents = reader.load_data()
