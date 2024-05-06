@@ -8,10 +8,10 @@ from rag import RAG
 FLAGS = flags.FLAGS
 
 def add_options():
-  flags.DEFINE_string('doc_dir', default = None, help = 'path to document directory')
+  flags.DEFINE_string('doc_dir', default = 'docs', help = 'path to document directory')
   flags.DEFINE_enum('device', default = 'cuda', enum_values = {'cpu', 'cuda'}, help = 'device to use')
   flags.DEFINE_string('host', default = '0.0.0.0', help = 'host address')
-  flags.DEFINE_integer('port', default = 8880, help = 'port number')
+  flags.DEFINE_integer('port', default = 8081, help = 'port number')
   flags.DEFINE_enum('model', default = 'zephyr', enum_values = {'zephyr'}, help = 'model to use')
 
 class Wraper(object):
