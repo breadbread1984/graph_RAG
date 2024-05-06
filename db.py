@@ -9,7 +9,7 @@ from llama_index.core import SimpleDirectoryReader, KnowledgeGraphIndex, Storage
 from llama_index.graph_stores.nebula import NebulaGraphStore
 from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core.retrievers import KnowledgeGraphRAGRetriever
-from models import Zephyr
+from models import Zephyr, LlaMA3
 
 class DocDatabase(object):
   def __init__(self, model = 'zephyr'):
@@ -20,6 +20,8 @@ class DocDatabase(object):
     self.storage_context = StorageContext.from_defaults(graph_store = graph_store)
     if model == 'zephyr':
       self.llm = Zephyr()
+    elif model == 'llama3':
+      self.llm = LlaMA3()
     else:
       raise Exception('unknown model!')
     self.service_context = ServiceContext.from_defaults(

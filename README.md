@@ -67,6 +67,6 @@ within nebula console
 start service with the following command
 
 ```shell
-python3 main.py --doc_dir <path/to/dir/of/pdf> --model (zephyr)
+python3 main.py --doc_dir <path/to/dir/of/pdf> --model (zephyr|llama3)
 ```
 
