@@ -15,7 +15,7 @@ class DocDatabase(object):
   def __init__(self):
     environ['NEBULA_USER'] = 'root'
     environ['NEBULA_PASSWORD'] = 'nebula'
-    environ['NEBULA_ADDRESS'] = 'localhost:9669'
+    environ['NEBULA_ADDRESS'] = '103.6.49.76:9669'
     graph_store = NebulaGraphStore(space_name = 'llamaindex', edge_types = ['relationship'], rel_prop_names = ['relationship'], tags = ['entity'])
     self.storage_context = StorageContext.from_defaults(graph_store = graph_store)
     def messages_to_prompt(message):
