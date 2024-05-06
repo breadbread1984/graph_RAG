@@ -17,6 +17,9 @@ wget https://oss-cdn.nebula-graph.com.cn/package/3.6.0/nebula-graph-3.6.0.ubuntu
 tar -xvzf nebula-graph-3.6.0.ubuntu2004.amd64.tar.gz
 mkdir -p ~/opt
 mv nebula-graph-3.6.0.ubuntu2004.amd64 ~/opt/nebula-graph-3.6.0
+cp ~/opt/nebula-graph-3.6.0/etc/nebula-graphd.conf.default ~/opt/nebula-graph-3.6.0/etc/nebula-graphd.conf
+cp ~/opt/nebula-graph-3.6.0/etc/nebula-metad.conf.default ~/opt/nebula-graph-3.6.0/etc/nebula-metad.conf
+cp ~/opt/nebula-graph-3.6.0/etc/nebula-storaged.conf.default ~/opt/nebula-graph-3.6.0/etc/nebula-storaged.conf
 wget https://github.com/vesoft-inc/nebula-console/releases/download/v3.6.0/nebula-console-linux-amd64-v3.6.0
 mv nebula-console-linux-amd64-v3.6.0 ~/opt/nebula-graph-3.6.0/bin/nebula-console
 ```
