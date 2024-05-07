@@ -5,21 +5,16 @@ from huggingface_hub import login
 from llama_index.llms.huggingface import HuggingFaceLLM
 
 def Zephyr():
-  def messages_to_prompt(message):
-    prompt = ''
-    for message in messages:
-      if message.role == 'system':
-        prompt += f"<|system|>\n{message.content}</s>\n"
-      elif message.role == 'user':
-        prompt += f"<|user|>\n{message.content}</s>\n"
-      elif message.role == 'assistant':
-        prompt += f"<|assistant|>\n{message.content}</s>\n"
-    if not prompt.startswith('<|system|>\n'):
-      prompt = "<|system|>\n</s>\n" + prompt
-    prompt = prompt + "<|assistant|>\n"
+  login(token = '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')
+  tokenizer = AutoTokenizer.from_pretrained('HuggingFaceH4/zephyr-7b-beta', trust_remote_code = True)
+  def messages_to_prompt(messages):
+    messages = [{'role': message.role, 'content': message.content} for message in messages]
+    prompt = tokenizer.apply_chat_template(messages, tokenize = False, add_generation_prompt = True)
     return prompt
   def completion_to_prompt(completion):
-    return f"<|system|>\n</s>\n<|user|>\n{completion}</s>\n<|assistant|>\n"
+    messages = [{'role': 'user', 'content': completion}]
+    prompt = tokenizer.apply_chat_template(messages, tokenize = False, add_generation_prompt = True)
+    return prompt
   llm = HuggingFaceLLM(
     model_name = 'HuggingFaceH4/zephyr-7b-beta',
     tokenizer_name = 'HuggingFaceH4/zephyr-7b-beta',
@@ -32,8 +27,8 @@ def Zephyr():
 def LlaMA3():
   login(token = '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')
   tokenizer = AutoTokenizer.from_pretrained('meta-llama/Meta-Llama-3-8B-Instruct', trust_remote_code = True)
-  def messages_to_prompt(message):
-    messages = [{'role': message.role, 'content': message.content}]
+  def messages_to_prompt(messages):
+    messages = [{'role': message.role, 'content': message.content} for message in messages]
     prompt = tokenizer.apply_chat_template(messages, tokenize = False, add_generation_prompt = True)
     return prompt
   def completion_to_prompt(completion):
@@ -52,7 +47,8 @@ def LlaMA3():
 def ChatGLM3():
   login(token = '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')
   tokenizer = AutoTokenizer.from_pretrained('THUDM/chatglm3-6b', trust_remote_code = True)
-  def messages_to_prompt(message):
+  def messages_to_prompt(messages):
+    messages = [{'role': message.role, 'content': message.content} for message in messages]
     return tokenizer.build_chat_input(message.content, history = list(), role = message.role)
   def completion_to_prompt(completion):
     return tokenizer.build_chat_input(completion, history = list(), role = 'user')
