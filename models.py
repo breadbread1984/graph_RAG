@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from transformers import AutoTokenizer
+from huggingface_hub import login
 from llama_index.llms.huggingface import HuggingFaceLLM
 
 def Zephyr():
@@ -29,6 +30,7 @@ def Zephyr():
   return llm
 
 def LlaMA3():
+  login(token = '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')
   tokenizer = AutoTokenizer.from_pretrained('meta-llama/Meta-Llama-3-8B-Instruct', trust_remote_code = True)
   def messages_to_prompt(message):
     messages = [{'role': message.role, 'content': message.content}]
@@ -48,6 +50,7 @@ def LlaMA3():
   return llm
 
 def ChatGLM3():
+  login(token = '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')
   tokenizer = AutoTokenizer.from_pretrained('THUDM/chatglm3-6b', trust_remote_code = True)
   def messages_to_prompt(message):
     return tokenizer.build_chat_input(message.content, history = list(), role = message.role)
