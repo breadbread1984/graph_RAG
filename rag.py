@@ -10,7 +10,7 @@ class RAG(object):
       self.query_engine = DocDatabase(model).load_db()
   def query(self, question):
     response = self.query_engine.query(question)
-    return response
+    return str(response)
 
 if __name__ == "__main__":
   rag = RAG('docs')
