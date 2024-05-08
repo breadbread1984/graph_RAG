@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from tqdm import tqdm
 from langchain.graphs import Neo4jGraph
 from langchain_experimental.graph_transformers.llm import LLMGraphTransformer
 from models import ChatGLM3, Llama2, Llama3
@@ -18,7 +19,7 @@ class DocDatabase(object):
     else:
       raise Exception('unknown model!')
     self.neo4j = Neo4jGraph(url = host, username = username, password = password)
-  def load_doc(self, doc_dir, db_dir):
+  def load_doc(self, doc_dir):
     print('load pages of documents')
     docs = list()
     for root, dirs, files in tqdm(walk(doc_dir)):
@@ -41,3 +42,4 @@ class DocDatabase(object):
 
 if __name__ == "__main__":
   db = DocDatabase(password = '19841124')
+  db.load_doc('docs')
