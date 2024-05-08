@@ -37,7 +37,7 @@ class DocDatabase(object):
     split_docs = text_splitter.split_documents(docs)
     # 3) extract triplets from documents
     print('extract triplets from documents')
-    graph = LLMGraphTransformer(llm = self.model).convert_to_graph_documents(docs)
+    graph = LLMGraphTransformer(llm = self.model).convert_to_graph_documents(split_docs)
     self.neo4j.addGraphDocuments(graph)
 
 if __name__ == "__main__":
