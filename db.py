@@ -5,7 +5,7 @@ from langchain_experimental.graph_transformers.llm import LLMGraphTransformer
 from models import ChatGLM3, Llama2, Llama3
 
 class DocDatabase(object):
-  def __init__(self, username = 'neo4j', password = None, host = 'localhost', model = 'llama3', device = 'cuda'):
+  def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', model = 'llama3', device = 'cuda'):
     self.username = username
     self.password = password
     self.host = host
