@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 from langchain.graphs import Neo4jGraph
-from langchain.embedding.huggingface import HuggingFaceEmbedding
 from langchain_experimental.graph_transformers.llm import LLMGraphTransformer
 from models import ChatGLM3, Llama2, Llama3
 
