@@ -9,17 +9,6 @@ class DocDatabase(object):
     self.username = username
     self.password = password
     self.host = host
-    self.entity_types = {
-      'polymer electrolyte': "exact polymer type, for example 'polyethylene oxide', 'polyvinyl alcohol', 'polymethyl methacrylate', 'polycaprolactone', 'polychitosan', 'polyvinyl pyrrolidone', 'polyvinyl chloride', 'polyvinylidene fluoride', 'polyimide'",
-      'invention': "material invention item, for example 'polymer', 'plasticizer', 'electrolyte'",
-      'field': "material application field, for example 'batteries', 'capacitors', 'sensors', 'condensers', 'electrochromic elements', 'photoelectric conversion elements'",
-      'accident': "accident type, for example 'catching on fire', 'burning', 'exploding'",
-      ''
-    }
-    self.relation_types = {
-    }
-    self.entity_relationship_match = {
-    }
   @staticmethod
   def load_db(db_dir):
     vectordb = Neo4jVector.from_existsing_graph(
@@ -49,7 +38,7 @@ class DocDatabase(object):
     print('split pages into chunks')
     text_splitter = RecursiveCharacterTextSplitter(chunk_size = 500, chunk_overlap = 150)
     split_docs = text_splitter.split_documents(docs)
-    # 3) encode strings to feature vectors
-    print('encode strings to feature vectors')
-    # NOTE: alternative model "distilbert/distilbert-base-uncased"
+    # 3) extract triplets from documents
+    print('extract triplets from documents')
+    results = 
     
