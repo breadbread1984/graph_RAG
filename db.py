@@ -3,6 +3,8 @@
 from os import walk
 from os.path import splitext, join
 from tqdm import tqdm
+from langchain.document_loaders import UnstructuredPDFLoader, UnstructuredFileLoader, UnstructuredMarkdownLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.graphs import Neo4jGraph
 from langchain_experimental.graph_transformers.llm import LLMGraphTransformer
 from models import ChatGLM3, Llama2, Llama3
