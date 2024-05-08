@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 from langchain.graphs import Neo4jGraph
-from langchain.vectorstores.neo4j_vector import Neo4jVector
 from langchain.embedding.huggingface import HuggingFaceEmbedding
 from langchain_experimental.graph_transformers.llm import LLMGraphTransformer
 from models import ChatGLM3, Llama2, Llama3
@@ -19,20 +18,8 @@ class DocDatabase(object):
       self.model = ChatGLM3(device = device)
     else:
       raise Exception('unknown model!')
-  @staticmethod
-  def load_db(db_dir):
-    vectordb = Neo4jVector.from_existsing_graph(
-      HuggingFaceEmbeddings(model_name = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"),
-      url = 'localhost',
-      username = self.username,
-      password = self.password,
-      index_name = 'tasks',
-      node_label = 'Task',
-      text_node_properties = ['name', 'description', 'status'],
-      embedding_node_property = 'embedding',)
-    return vectordb
-  @staticmethod
-  def load_doc(doc_dir, db_dir):
+    self.neo4j = Neo4jGraph(url = host, username = username, password = password)
+  def load_doc(self, doc_dir, db_dir):
     print('load pages of documents')
     docs = list()
     for root, dirs, files in tqdm(walk(doc_dir)):
@@ -51,4 +38,7 @@ class DocDatabase(object):
     # 3) extract triplets from documents
     print('extract triplets from documents')
     graph = LLMGraphTransformer(llm = self.model).convert_to_graph_documents(docs)
-    
+    self.neo4j.addGraphDocuments(graph)
+
+if __name__ == "__main__":
+  db = DocDatabase(password = '19841124')
