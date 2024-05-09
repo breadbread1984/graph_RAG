@@ -15,11 +15,11 @@ class DocDatabase(object):
     self.password = password
     self.host = host
     if model == 'llama2':
-      self.model = Llama2(device = device)
+      self.model = Llama2()
     elif model == 'llama3':
-      self.model = Llama3(device = device)
+      self.model = Llama3()
     elif model == 'chatglm3':
-      self.model = ChatGLM3(device = device)
+      self.model = ChatGLM3()
     else:
       raise Exception('unknown model!')
     self.neo4j = Neo4jGraph(url = host, username = username, password = password)
@@ -41,10 +41,13 @@ class DocDatabase(object):
     split_docs = text_splitter.split_documents(docs)
     # 3) extract triplets from documents
     print('extract triplets from documents')
-    graph = LLMGraphTransformer(llm = self.model).convert_to_graph_documents(split_docs)
-    self.neo4j.addGraphDocuments(graph)
+    graph = LLMGraphTransformer(
+              llm = self.model,
+              #allowed_nodes = ['reactant', 'catalyst', 'reaction_conditions', 'reaction_devices'],
+            ).convert_to_graph_documents(split_docs)
+    self.neo4j.add_graph_documents(graph)
 
 if __name__ == "__main__":
-  db = DocDatabase(password = '19841124')
+  db = DocDatabase(model = 'llama3', password = '19841124')
   #response = db.model.invoke({'input': 'hello'})
-  db.load_doc('docs')
+  db.load_doc('docs2')
