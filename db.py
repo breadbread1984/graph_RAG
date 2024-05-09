@@ -46,4 +46,5 @@ class DocDatabase(object):
 
 if __name__ == "__main__":
   db = DocDatabase(password = '19841124')
+  #response = db.model.invoke({'input': 'hello'})
   db.load_doc('docs')
