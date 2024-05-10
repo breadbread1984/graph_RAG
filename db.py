@@ -67,6 +67,9 @@ class DocDatabase(object):
     self.neo4j.add_graph_documents(graph)
     # 4) get all labels
     self.update_types()
+  def reset(self):
+    self.neo4j.query('match (a)-[r]-(b) delete a,r,b')
+    self.update_types()
   def query(self, text, keywords = 10):
     schemas = [
       ResponseSchema(name = entity_type, description = "key words of type %s" % entity_type)
@@ -84,5 +87,6 @@ class DocDatabase(object):
 
 if __name__ == "__main__":
   db = DocDatabase(model = 'llama3', password = '19841124')
-  db.load_doc('docs')
+  db.reset()
+  db.load_doc('docs2')
   db.query('who played in Casino movie?')
