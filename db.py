@@ -12,21 +12,20 @@ from langchain_experimental.graph_transformers.llm import LLMGraphTransformer
 from models import ChatGLM3, Llama2, Llama3
 
 class DocDatabase(object):
-  def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', model = 'llama3', entities = ['reactant', 'catalyst', 'reaction_conditions', 'reaction_devices']):
+  def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', model = 'llama3'):
     self.username = username
     self.password = password
     self.host = host
     self.model = model
-    self.entities = entities
+    self.neo4j = Neo4jGraph(url = host, username = username, password = password)
   def extract_json(self, message):
     text = message
-    pattern = r"```json(.*?)```"
+    pattern = r"```(.*?)```"
     matches = re.findall(pattern, text, re.DOTALL)
     try:
       return matches[0]
     except Exception:
       raise Exception("Failed to parse: {message}")
-    self.neo4j = Neo4jGraph(url = host, username = username, password = password)
   def get_model(self,):
     if self.model == 'llama2':
       return Llama2()
@@ -56,16 +55,20 @@ class DocDatabase(object):
     print('extract triplets from documents')
     chain = self.get_model() | self.extract_json
     graph = LLMGraphTransformer(
-              llm = chain,
-              allowed_nodes = self.entities,
+              llm = chain
             ).convert_to_graph_documents(split_docs)
     self.neo4j.add_graph_documents(graph)
-  def query(self, text):
+    # 4) get all labels
+    results = self.neo4j.query("match (n) return distinct labels(n)")
+    self.entity_types = [result['labels(n)'][0] for result in results]
+    results = self.neo4j.query("match (a)-[r]-(b) return distinct type(r)")
+    self.relation_types = [result['type(r)'] for result in results]
+  def query(self, text, keywords = 10):
     prompt = ChatPromptTemplate.fromMessage([
-      ("system", "You are extracting %s from the text." % ', '.join(self.entities)),
-      ("user", "Use the given format to extract information from the following\ninput: {question}")
+      ("system", "A question is provided below. Given the question, extract up to %d keywords from the text. Focus on extracting the keywords that we can use to best lookup answers to the question. Avoid stopwords." % keywords),
+      ("user", "{question}\nProvide keywords in the following comma-separated format: 'KEYWORDS: <keywords>'")
     ])
-    
+    chain = prompt | self.get_model()
 
 if __name__ == "__main__":
   db = DocDatabase(model = 'llama3', password = '19841124')
