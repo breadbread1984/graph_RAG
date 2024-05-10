@@ -18,7 +18,7 @@ class DocDatabase(object):
     self.host = host
     self.model = model
     self.entities = entities
-  def extract_json(self.message):
+  def extract_json(self, message):
     text = message
     pattern = r"```json(.*?)```"
     matches = re.findall(pattern, text, re.DOTALL)
