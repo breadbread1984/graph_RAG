@@ -18,6 +18,12 @@ class DocDatabase(object):
     self.host = host
     self.model = model
     self.neo4j = Neo4jGraph(url = host, username = username, password = password)
+    self.update_types()
+  def update_types(self):
+    results = self.neo4j.query("match (n) return distinct labels(n)")
+    self.entity_types = [result['labels(n)'][0] for result in results]
+    results = self.neo4j.query("match (a)-[r]-(b) return distinct type(r)")
+    self.relation_types = [result['type(r)'] for result in results]
   def extract_json(self, message):
     text = message
     pattern = r"```(.*?)```"
@@ -59,17 +65,16 @@ class DocDatabase(object):
             ).convert_to_graph_documents(split_docs)
     self.neo4j.add_graph_documents(graph)
     # 4) get all labels
-    results = self.neo4j.query("match (n) return distinct labels(n)")
-    self.entity_types = [result['labels(n)'][0] for result in results]
-    results = self.neo4j.query("match (a)-[r]-(b) return distinct type(r)")
-    self.relation_types = [result['type(r)'] for result in results]
+    self.update_types()
   def query(self, text, keywords = 10):
-    prompt = ChatPromptTemplate.fromMessage([
-      ("system", "A question is provided below. Given the question, extract up to %d keywords from the text. Focus on extracting the keywords that we can use to best lookup answers to the question. Avoid stopwords." % keywords),
-      ("user", "{question}\nProvide keywords in the following comma-separated format: 'KEYWORDS: <keywords>'")
+    prompt = ChatPromptTemplate.from_messages([
+      ("system", "You are extracting %s from the text" % ', '.join(self.entity_types)),
+      ("user", "Use the given format to extract information from the following\ninput: {question}")
     ])
     chain = prompt | self.get_model()
+    print(chain.invoke({'question': text}))
 
 if __name__ == "__main__":
   db = DocDatabase(model = 'llama3', password = '19841124')
-  db.load_doc('docs2')
+  #db.load_doc('docs2')
+  db.query('who played in Casino movie?')
