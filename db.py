@@ -32,7 +32,7 @@ class DocDatabase(object):
     try:
       return matches[0]
     except Exception:
-      raise Exception("Failed to parse: {message}")
+      return "[]"
   def get_model(self,):
     if self.model == 'llama2':
       return Llama2()
@@ -88,5 +88,5 @@ class DocDatabase(object):
 if __name__ == "__main__":
   db = DocDatabase(model = 'llama3', password = '19841124')
   db.reset()
-  db.load_doc('docs2')
+  db.load_doc('化学论文')
   db.query('who played in Casino movie?')
