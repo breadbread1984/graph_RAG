@@ -10,6 +10,18 @@ this project is to implement Graph RAG algorithm with langchain
 python3 -m pip install -r requirements.txt
 ```
 
+edit line 551 of **<path/to/site-packages>/langchain_experimental/graph_transformers/llm.py** to change the code from
+
+```python
+except NotImplementedError:
+```
+
+to
+
+```python
+except
+```
+
 edit line 595 of **<path/to/site-packages>/langchain_experimental/graph_transformers/llm.py** to change the code from
 
 ```python
