@@ -2,24 +2,34 @@
 
 from os import walk
 from os.path import splitext, join
+import re
 from tqdm import tqdm
 from langchain.document_loaders import UnstructuredPDFLoader, UnstructuredFileLoader, UnstructuredMarkdownLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_core.prompts import ChatPromptTemplate
 from langchain.graphs import Neo4jGraph
 from langchain_experimental.graph_transformers.llm import LLMGraphTransformer
 from models import ChatGLM3, Llama2, Llama3
 
 class DocDatabase(object):
-  def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', model = 'llama3', device = 'cuda'):
+  def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', model = 'llama3'):
     self.username = username
     self.password = password
     self.host = host
+    def extract_json(message):
+      text = message
+      pattern = r"```json(.*?)```"
+      matches = re.findall(pattern, text, re.DOTALL)
+      try:
+        return matches[0]
+      except Exception:
+        raise Exception("Failed to parse: {message}")
     if model == 'llama2':
-      self.model = Llama2(device = device)
+      self.model = Llama2() | extract_json
     elif model == 'llama3':
-      self.model = Llama3(device = device)
+      self.model = Llama3() | extract_json
     elif model == 'chatglm3':
-      self.model = ChatGLM3(device = device)
+      self.model = ChatGLM3() | extract_json
     else:
       raise Exception('unknown model!')
     self.neo4j = Neo4jGraph(url = host, username = username, password = password)
@@ -42,8 +52,8 @@ class DocDatabase(object):
     # 3) extract triplets from documents
     print('extract triplets from documents')
     graph = LLMGraphTransformer(llm = self.model).convert_to_graph_documents(split_docs)
-    self.neo4j.addGraphDocuments(graph)
+    self.neo4j.add_graph_documents(graph)
 
 if __name__ == "__main__":
-  db = DocDatabase(password = '19841124')
-  db.load_doc('docs')
+  db = DocDatabase(host = 'bolt://10.64.238.18:7687', password = '19841124')
+  db.load_doc('docs2')
