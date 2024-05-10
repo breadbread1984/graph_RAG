@@ -74,13 +74,13 @@ class DocDatabase(object):
     ]
     parser = StructuredOutputParser.from_response_schemas(schemas)
     prompt = PromptTemplate(
-      template = "You are extracting %s from the following text.\n{question}\n{format_instructions}" % ', '.join(self.entity_types),
-      input_variables = ["question"],
-      partial_variables = {"format_instructions": parser.get_format_instructions}
+      template = "You are extracting keywords of type among %s from the following text.\n{question}\n{format_instructions}" % (', '.join(self.entity_types),),
+      input_variables = ['question'],
+      partial_variables = {'format_instructions': parser.get_format_instructions()}
     )
-    print(prompt.format_prompt(question= "who played in Casino movie?"))
     chain = prompt | self.get_model() | parser
-    print(chain.invoke({'question': text}))
+    results = chain.invoke({'question': text})
+    print(results)
 
 if __name__ == "__main__":
   db = DocDatabase(model = 'llama3', password = '19841124')
