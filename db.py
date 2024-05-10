@@ -79,10 +79,10 @@ class DocDatabase(object):
       partial_variables = {'format_instructions': parser.get_format_instructions()}
     )
     chain = prompt | self.get_model() | parser
-    results = chain.invoke({'question': text})
-    print(results)
+    keywords = chain.invoke({'question': text})
+    
 
 if __name__ == "__main__":
   db = DocDatabase(model = 'llama3', password = '19841124')
-  #db.load_doc('docs2')
+  db.load_doc('docs')
   db.query('who played in Casino movie?')
