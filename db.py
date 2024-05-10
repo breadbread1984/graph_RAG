@@ -12,27 +12,30 @@ from langchain_experimental.graph_transformers.llm import LLMGraphTransformer
 from models import ChatGLM3, Llama2, Llama3
 
 class DocDatabase(object):
-  def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', model = 'llama3'):
+  def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', model = 'llama3', entities = ['reactant', 'catalyst', 'reaction_conditions', 'reaction_devices']):
     self.username = username
     self.password = password
     self.host = host
-    def extract_json(message):
-      text = message
-      pattern = r"```json(.*?)```"
-      matches = re.findall(pattern, text, re.DOTALL)
-      try:
-        return matches[0]
-      except Exception:
-        raise Exception("Failed to parse: {message}")
-    if model == 'llama2':
-      self.model = Llama2() | extract_json
-    elif model == 'llama3':
-      self.model = Llama3() | extract_json
-    elif model == 'chatglm3':
-      self.model = ChatGLM3() | extract_json
+    self.model = model
+    self.entities = entities
+  def extract_json(self.message):
+    text = message
+    pattern = r"```json(.*?)```"
+    matches = re.findall(pattern, text, re.DOTALL)
+    try:
+      return matches[0]
+    except Exception:
+      raise Exception("Failed to parse: {message}")
+    self.neo4j = Neo4jGraph(url = host, username = username, password = password)
+  def get_model(self,):
+    if self.model == 'llama2':
+      return Llama2()
+    elif self.model == 'llama3':
+      return Llama3()
+    elif self.model == 'chatglm3':
+      return ChatGLM3()
     else:
       raise Exception('unknown model!')
-    self.neo4j = Neo4jGraph(url = host, username = username, password = password)
   def load_doc(self, doc_dir):
     print('load pages of documents')
     docs = list()
@@ -51,11 +54,18 @@ class DocDatabase(object):
     split_docs = text_splitter.split_documents(docs)
     # 3) extract triplets from documents
     print('extract triplets from documents')
+    chain = self.get_model() | self.extract_json
     graph = LLMGraphTransformer(
-              llm = self.model,
-              #allowed_nodes = ['reactant', 'catalyst', 'reaction_conditions', 'reaction_devices'],
+              llm = chain,
+              allowed_nodes = self.entities,
             ).convert_to_graph_documents(split_docs)
     self.neo4j.add_graph_documents(graph)
+  def query(self, text):
+    prompt = ChatPromptTemplate.fromMessage([
+      ("system", "You are extracting %s from the text." % ', '.join(self.entities)),
+      ("user", "Use the given format to extract information from the following\ninput: {question}")
+    ])
+    
 
 if __name__ == "__main__":
   db = DocDatabase(model = 'llama3', password = '19841124')
