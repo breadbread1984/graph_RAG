@@ -70,7 +70,7 @@ class DocDatabase(object):
   def reset(self):
     self.neo4j.query('match (a)-[r]-(b) delete a,r,b')
     self.update_types()
-  def query(self, text, keywords = 10):
+  def extract_keywords(self, text, keywords = 10):
     schemas = [
       ResponseSchema(name = entity_type, description = "key words of type %s" % entity_type)
       for entity_type in self.entity_types
@@ -83,7 +83,15 @@ class DocDatabase(object):
     )
     chain = prompt | self.get_model() | parser
     keywords = chain.invoke({'question': text})
-    
+    return keywords
+  def extract_triplets(self, text, triplets = 10):
+    chain = self.get_model() | self.extract_json
+    graph = LLMGraphTransformer(
+              llm = chain,
+              allowed_nodes = self.entity_types,
+              allowed_relationships = self.relation_types,
+            ).convert_to_graph_documents([Document(page_content = text])
+
 
 if __name__ == "__main__":
   db = DocDatabase(model = 'llama3', password = '19841124')
