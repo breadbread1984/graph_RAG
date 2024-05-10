@@ -6,7 +6,8 @@ import re
 from tqdm import tqdm
 from langchain.document_loaders import UnstructuredPDFLoader, UnstructuredFileLoader, UnstructuredMarkdownLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
+from langchain.output_parsers import ResponseSchema, StructuredOutputParser
 from langchain.graphs import Neo4jGraph
 from langchain_experimental.graph_transformers.llm import LLMGraphTransformer
 from models import ChatGLM3, Llama2, Llama3
@@ -67,11 +68,18 @@ class DocDatabase(object):
     # 4) get all labels
     self.update_types()
   def query(self, text, keywords = 10):
-    prompt = ChatPromptTemplate.from_messages([
-      ("system", "You are extracting %s from the text" % ', '.join(self.entity_types)),
-      ("user", "Use the given format to extract information from the following\ninput: {question}")
-    ])
-    chain = prompt | self.get_model()
+    schemas = [
+      ResponseSchema(name = entity_type, description = "key words of type %s" % entity_type)
+      for entity_type in self.entity_types
+    ]
+    parser = StructuredOutputParser.from_response_schemas(schemas)
+    prompt = PromptTemplate(
+      template = "You are extracting %s from the following text.\n{question}\n{format_instructions}" % ', '.join(self.entity_types),
+      input_variables = ["question"],
+      partial_variables = {"format_instructions": parser.get_format_instructions}
+    )
+    print(prompt.format_prompt(question= "who played in Casino movie?"))
+    chain = prompt | self.get_model() | parser
     print(chain.invoke({'question': text}))
 
 if __name__ == "__main__":
