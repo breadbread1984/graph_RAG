@@ -90,7 +90,7 @@ class DocDatabase(object):
               llm = chain,
               allowed_nodes = self.entity_types,
               allowed_relationships = self.relation_types,
-            ).convert_to_graph_documents([Document(page_content = text])
+            ).convert_to_graph_documents([Document(page_content = text)])
 
 
 if __name__ == "__main__":
