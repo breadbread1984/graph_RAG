@@ -94,7 +94,7 @@ class DocDatabase(object):
 
 
 if __name__ == "__main__":
-  db = DocDatabase(model = 'llama3', password = '19841124')
+  db = DocDatabase(model = 'llama3', password = 'neo4j')
   db.reset()
   db.load_doc('化学论文')
   db.query('who played in Casino movie?')
