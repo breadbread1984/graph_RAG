@@ -11,7 +11,7 @@ from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain.output_parsers import ResponseSchema, StructuredOutputParser
 from langchain.graphs import Neo4jGraph
 from langchain_experimental.graph_transformers.llm import LLMGraphTransformer
-from models import ChatGLM3, Llama2, Llama3
+from models import ChatGLM3, Llama2, Llama3, GPT3_5
 
 class DocDatabase(object):
   def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', database = 'neo4j', model = 'llama3', locally = False):
@@ -38,6 +38,8 @@ class DocDatabase(object):
       return Llama3(self.locally)
     elif self.model == 'chatglm3':
       return ChatGLM3(self.locally)
+    elif self.model == 'gpt3.5':
+      return GPT3_5()
     else:
       raise Exception('unknown model!')
   def extract_knowledge_graph(self, doc_dir):
@@ -86,14 +88,14 @@ class DocDatabase(object):
     keywords = chain.invoke({'question': text})
     return keywords
   def query(self, text):
-    entities = self.extract_entities(text)
-    exists_entities = list(entities.keys())
-    cmd = 'match (p:%s) ' % '|'.join(exists_entities)
-    for e in exists_entities:
-      cmd += ''
+    cypher_prompt = ChatPromptTemplate.from_messages([
+      ('system', 'Given an input question, convert it to a Cypher query. No pre-amble.'),
+      ('user', 'Based on the Neo4j graph schema below, write a Cypher query that would answer the user\'s question:\n{schema}\nEntities in the question map to the following database values:\n{entities_list}\nQuestion: {question}\nCypher query:')
+    ])
+
 
 if __name__ == "__main__":
-  db = DocDatabase(model = 'llama3', password = '19841124', locally = True)
+  db = DocDatabase(model = 'gpt3.5', password = '19841124', locally = True)
   db.reset()
-  db.extract_knowledge_graph('docs')
+  db.extract_knowledge_graph('docs2')
   #db.query('who played in Casino movie?')
