@@ -15,6 +15,7 @@ from models import ChatGLM3, Llama2, Llama3
 class DocDatabase(object):
   def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', database = 'neo4j', model = 'llama3', locally = False):
     self.model = model
+    self.locally = locally
     self.neo4j = Neo4jGraph(url = host, username = username, password = password, database = database)
     self.update_types()
   def update_types(self):
@@ -32,11 +33,11 @@ class DocDatabase(object):
       return "[]"
   def get_model(self,):
     if self.model == 'llama2':
-      return Llama2(locally)
+      return Llama2(self.locally)
     elif self.model == 'llama3':
-      return Llama3(locally)
+      return Llama3(self.locally)
     elif self.model == 'chatglm3':
-      return ChatGLM3(locally)
+      return ChatGLM3(self.locally)
     else:
       raise Exception('unknown model!')
   def extract_knowledge_graph(self, doc_dir):
@@ -92,7 +93,7 @@ class DocDatabase(object):
       cmd += ''
 
 if __name__ == "__main__":
-  db = DocDatabase(model = 'llama3', password = '19841124')
+  db = DocDatabase(model = 'llama3', password = '19841124', locally = True)
   db.reset()
-  db.extract_knowledge_graph('docs')
+  db.extract_knowledge_graph('docs2')
   db.query('who played in Casino movie?')
