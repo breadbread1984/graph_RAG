@@ -13,12 +13,9 @@ from langchain_experimental.graph_transformers.llm import LLMGraphTransformer
 from models import ChatGLM3, Llama2, Llama3
 
 class DocDatabase(object):
-  def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', model = 'llama3'):
-    self.username = username
-    self.password = password
-    self.host = host
+  def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', database = 'neo4j', model = 'llama3', locally = False):
     self.model = model
-    self.neo4j = Neo4jGraph(url = host, username = username, password = password)
+    self.neo4j = Neo4jGraph(url = host, username = username, password = password, database = database)
     self.update_types()
   def update_types(self):
     results = self.neo4j.query("match (n) return distinct labels(n)")
@@ -35,14 +32,15 @@ class DocDatabase(object):
       return "[]"
   def get_model(self,):
     if self.model == 'llama2':
-      return Llama2()
+      return Llama2(locally)
     elif self.model == 'llama3':
-      return Llama3()
+      return Llama3(locally)
     elif self.model == 'chatglm3':
-      return ChatGLM3()
+      return ChatGLM3(locally)
     else:
       raise Exception('unknown model!')
-  def load_doc(self, doc_dir):
+  def extract_knowledge_graph(self, doc_dir):
+    # extract knowledge graph from documents
     print('load pages of documents')
     docs = list()
     for root, dirs, files in tqdm(walk(doc_dir)):
@@ -68,9 +66,11 @@ class DocDatabase(object):
     # 4) get all labels
     self.update_types()
   def reset(self):
+    # delete all entities and relations in neo4j
     self.neo4j.query('match (a)-[r]-(b) delete a,r,b')
     self.update_types()
-  def extract_keywords(self, text, keywords = 10):
+  def extract_entities(self, text):
+    # extract entities of type exists in neo4j
     schemas = [
       ResponseSchema(name = entity_type, description = "key words of type %s" % entity_type)
       for entity_type in self.entity_types
@@ -84,17 +84,15 @@ class DocDatabase(object):
     chain = prompt | self.get_model() | parser
     keywords = chain.invoke({'question': text})
     return keywords
-  def extract_triplets(self, text, triplets = 10):
-    chain = self.get_model() | self.extract_json
-    graph = LLMGraphTransformer(
-              llm = chain,
-              allowed_nodes = self.entity_types,
-              allowed_relationships = self.relation_types,
-            ).convert_to_graph_documents([Document(page_content = text)])
-
+  def query(self, text):
+    entities = self.extract_entities(text)
+    exists_entities = list(entities.keys())
+    cmd = 'match (p:%s) ' % '|'.join(exists_entities)
+    for e in exists_entities:
+      cmd += ''
 
 if __name__ == "__main__":
-  db = DocDatabase(model = 'llama3', password = 'neo4j')
+  db = DocDatabase(model = 'llama3', password = '19841124')
   db.reset()
-  db.load_doc('化学论文')
+  db.extract_knowledge_graph('docs')
   db.query('who played in Casino movie?')
