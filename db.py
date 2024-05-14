@@ -25,12 +25,12 @@ class DocDatabase(object):
     self.relation_types = [result['type(r)'] for result in results]
   def extract_json(self, message):
     text = message
-    pattern = r"```(.*?)```"
+    pattern = r"```json(.*?)```"
     matches = re.findall(pattern, text, re.DOTALL)
-    try:
-      return matches[0]
-    except Exception:
-      return "[]"
+    if len(matches) == 0:
+      pattern = r"```(.*?)```"
+      matches = re.findall(pattern, text, re.DOTALL)
+    return "[]" if len(matches) == 0 else matches[0]
   def get_model(self,):
     if self.model == 'llama2':
       return Llama2(self.locally)
