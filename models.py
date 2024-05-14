@@ -91,3 +91,7 @@ def Llama3(locally = False):
       eos_token_id = [tokenizer.eos_token_id, tokenizer.convert_tokens_to_ids("<|eot_id|>")],
       use_cache = True
     )
+
+def GPT3_5():
+  return ChatOpenAI(model = 'gpt-3.5-turbo-0125', temperature = 0)
+
