@@ -102,7 +102,7 @@ class DocDatabase(object):
       cmd += ''
 
 if __name__ == "__main__":
-  db = DocDatabase(model = 'llama3', password = '19841124')
+  db = DocDatabase(model = 'llama3', password = '19841124', locally = True)
   db.reset()
-  db.extract_knowledge_graph('test')
+  db.extract_knowledge_graph('docs')
   #db.query('who played in Casino movie?')
