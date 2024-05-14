@@ -3,6 +3,7 @@
 from os import walk
 from os.path import splitext, join
 import re
+import json
 from tqdm import tqdm
 from langchain.document_loaders import UnstructuredPDFLoader, UnstructuredFileLoader, UnstructuredMarkdownLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -24,12 +25,20 @@ class DocDatabase(object):
     results = self.neo4j.query("match (a)-[r]-(b) return distinct type(r)")
     self.relation_types = [result['type(r)'] for result in results]
   def extract_json(self, message):
-    text = message
     pattern = r"```json(.*?)```"
-    matches = re.findall(pattern, text, re.DOTALL)
+    matches = re.findall(pattern, message, re.DOTALL)
     if len(matches) == 0:
       pattern = r"```(.*?)```"
-      matches = re.findall(pattern, text, re.DOTALL)
+      matches = re.findall(pattern, message, re.DOTALL)
+    if len(matches) == 0:
+      matches = list()
+      for line in message.splitlines():
+        try:
+          json.loads(line)
+          matches.append(line)
+          break
+        except:
+          continue
     return "[]" if len(matches) == 0 else matches[0]
   def get_model(self,):
     if self.model == 'llama2':
@@ -96,4 +105,4 @@ if __name__ == "__main__":
   db = DocDatabase(model = 'llama3', password = '19841124')
   db.reset()
   db.extract_knowledge_graph('test')
-  db.query('who played in Casino movie?')
+  #db.query('who played in Casino movie?')
