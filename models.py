@@ -83,14 +83,4 @@ def Llama3(locally = False):
     environ['HUGGINGFACEHUB_API_TOKEN'] = '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'
     return HuggingFaceEndpoint(
       endpoint_url = "meta-llama/Meta-Llama-3-8B-Instruct",
-      task = "text-generation",
-      max_length = 8192,
-      do_sample = False,
-      temperature = 0.6,
-      top_p = 0.9,
-      model_kwargs = {
-        "eos_token_id": [tokenizer.eos_token_id, tokenizer.convert_tokens_to_ids("<|eot_id|>")]
-      },
-      use_cache = True
     )
-
