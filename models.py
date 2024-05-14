@@ -54,6 +54,7 @@ def Llama2(locally = False):
 
 def Llama3(locally = False):
   login(token = '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')
+  tokenizer = AutoTokenizer.from_pretrained('meta-llama/Meta-Llama-3-8B-Instruct')
   if locally:
     return HuggingFacePipeline.from_model_id(
       model_id = "meta-llama/Meta-Llama-3-8B-Instruct",
@@ -67,7 +68,6 @@ def Llama3(locally = False):
       }
     )
   else:
-    tokenizer = AutoTokenizer.from_pretrained('meta-llama/Meta-Llama-3-8B-Instruct')
     environ['HUGGINGFACEHUB_API_TOKEN'] = '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'
     return HuggingFaceEndpoint(
       endpoint_url = "meta-llama/Meta-Llama-3-8B-Instruct",
