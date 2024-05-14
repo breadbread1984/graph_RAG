@@ -30,15 +30,6 @@ class DocDatabase(object):
     if len(matches) == 0:
       pattern = r"```(.*?)```"
       matches = re.findall(pattern, message, re.DOTALL)
-    if len(matches) == 0:
-      matches = list()
-      for line in message.splitlines():
-        try:
-          json.loads(line)
-          matches.append(line)
-          break
-        except:
-          continue
     return "[]" if len(matches) == 0 else matches[0]
   def get_model(self,):
     if self.model == 'llama2':
