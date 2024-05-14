@@ -12,11 +12,13 @@ def ChatGLM3(locally = False):
     return HuggingFacePipeline.from_model_id(
       model_id = 'THUDM/chatglm3-6b',
       task = 'text-generation',
-      max_length = 8192,
-      do_sample = False,
-      top_p =  0.8,
-      temperature = 0.8,
-      trust_remote_code = True
+      pipeline_kwargs = {
+        "max_length": 8192,
+        "do_sample": False,
+        "top_p": 0.8,
+        "temperature": 0.8,
+        "trust_remote_code": True
+      }
     )
   else:
     environ['HUGGINGFACEHUB_API_TOKEN'] = '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'
@@ -36,10 +38,12 @@ def Llama2(locally = False):
     return HuggingFacePipeline.from_model_id(
       model_id = "meta-llama/Llama-2-7b-chat-hf",
       task = "text-generation",
-      max_length = 4096,
-      do_sample = False,
-      temperature = 0.8,
-      top_p = 0.8,
+      pipeline_kwargs = {
+        "max_length": 4096,
+        "do_sample": False,
+        "temperature": 0.8,
+        "top_p": 0.8,
+      }
     )
   else:
     environ['HUGGINGFACEHUB_API_TOKEN'] = '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'
@@ -59,11 +63,11 @@ def Llama3(locally = False):
     return HuggingFacePipeline.from_model_id(
       model_id = "meta-llama/Meta-Llama-3-8B-Instruct",
       task = "text-generation",
-      max_length = 4096,
-      do_sample = False,
-      temperature = 0.6,
-      top_p = 0.9,
-      model_kwargs = {
+      pipeline_kwargs = {
+        "max_length": 4096,
+        "do_sample": False,
+        "temperature": 0.6,
+        "top_p": 0.9,
         "eos_token_id": [tokenizer.eos_token_id, tokenizer.convert_tokens_to_ids("<|eot_id|>")]
       }
     )
