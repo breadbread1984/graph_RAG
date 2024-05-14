@@ -12,6 +12,7 @@ def ChatGLM3(locally = False):
     return HuggingFacePipeline.from_model_id(
       model_id = 'THUDM/chatglm3-6b',
       task = 'text-generation',
+      device = 0,
       pipeline_kwargs = {
         "max_length": 8192,
         "do_sample": False,
@@ -38,6 +39,7 @@ def Llama2(locally = False):
     return HuggingFacePipeline.from_model_id(
       model_id = "meta-llama/Llama-2-7b-chat-hf",
       task = "text-generation",
+      device = 0,
       pipeline_kwargs = {
         "max_length": 4096,
         "do_sample": False,
@@ -63,6 +65,7 @@ def Llama3(locally = False):
     return HuggingFacePipeline.from_model_id(
       model_id = "meta-llama/Meta-Llama-3-8B-Instruct",
       task = "text-generation",
+      device = 0,
       pipeline_kwargs = {
         "max_length": 4096,
         "do_sample": False,
