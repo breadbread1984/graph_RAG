@@ -5,6 +5,7 @@ from huggingface_hub import login
 from transformers import AutoTokenizer
 from langchain_community.llms import HuggingFaceEndpoint
 from langchain_community.llms.huggingface_pipeline import HuggingFacePipeline
+from langchain_openai import ChatOpenAI
 
 def ChatGLM3(locally = False):
   if locally:
