@@ -110,7 +110,7 @@ def extract_triplets_template(tokenizer, node_labels = None, rel_types = None):
         "tail_type": "Characteristic",
     },
   ]
-  # escape {} to avoid be taken as input variables
+  # escape {} to avoid being taken as input variables
   instructions = parser.get_format_instructions()
   instructions = instructions.replace('{','{{')
   instructions = instructions.replace('}','}}')
