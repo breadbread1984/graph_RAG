@@ -75,8 +75,10 @@ class DocDatabase(object):
       return matches[0]
     chain = prompt | llm | cypher_parser
     cypher_cmd = chain.invoke({'question': question})
-    result = self.neo4j.query(cypher_cmd)
-    return result
+    data = self.neo4j.query(cypher_cmd)
+    if len(data) == 0:
+      raise Exception('No knowledge was matched!')
+    return [d['context'] for d in data]
 
 if __name__ == "__main__":
   db = DocDatabase(model = 'llama3', password = '19841124')
