@@ -25,13 +25,6 @@ class DocDatabase(object):
     self.entity_types = [result['labels(n)'][0] for result in results]
     results = self.neo4j.query("match (a)-[r]-(b) return distinct type(r)")
     self.relation_types = [result['type(r)'] for result in results]
-  def extract_json(self, message):
-    pattern = r"```json(.*?)```"
-    matches = re.findall(pattern, message, re.DOTALL)
-    if len(matches) == 0:
-      pattern = r"```(.*?)```"
-      matches = re.findall(pattern, message, re.DOTALL)
-    return "[]" if len(matches) == 0 else matches[0]
   def get_tokenizer_model(self,):
     if self.model == 'llama2':
       return Llama2(self.locally)
@@ -62,9 +55,8 @@ class DocDatabase(object):
     print('extract triplets from documents')
     tokenizer, llm = self.get_tokenizer_model()
     prompt, parser = extract_triplets_template(tokenizer)
-    chain = llm | self.extract_json
     graph = LLMGraphTransformer(
-              llm = chain,
+              llm = llm,
               prompt = prompt
             ).convert_to_graph_documents(split_docs)
     self.neo4j.add_graph_documents(graph)
