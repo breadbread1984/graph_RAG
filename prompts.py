@@ -156,12 +156,10 @@ def cypher_generation_template(tokenizer, neo4j, entity_types):
   return template
 
 if __name__ == "__main__":
-  '''
   from huggingface_hub import login
   from transformers import AutoTokenizer
   login(token = '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')
   tokenizer = AutoTokenizer.from_pretrained('meta-llama/Meta-Llama-3-8B-Instruct')
   template, parser = extract_triplets_template(tokenizer, node_labels = ['node1', 'node2', 'node3'], rel_types = ['rel1', 'rel2', 'rel3'])
   print(template.format_prompt(input = 'test').to_string())
-  '''
 
