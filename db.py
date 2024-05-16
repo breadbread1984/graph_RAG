@@ -66,26 +66,8 @@ class DocDatabase(object):
     # delete all entities and relations in neo4j
     self.neo4j.query('match (a)-[r]-(b) delete a,r,b')
     self.update_types()
-  def extract_entities(self, text):
-    # extract entities of type exists in neo4j
-    schemas = [
-      ResponseSchema(name = entity_type, description = "key words of type %s" % entity_type)
-      for entity_type in self.entity_types
-    ]
-    parser = StructuredOutputParser.from_response_schemas(schemas)
-    prompt = PromptTemplate(
-      template = "You are extracting keywords of type among %s from the following text.\n{question}\n{format_instructions}" % (', '.join(self.entity_types),),
-      input_variables = ['question'],
-      partial_variables = {'format_instructions': parser.get_format_instructions()}
-    )
-    chain = prompt | self.get_model() | parser
-    keywords = chain.invoke({'question': text})
-    return keywords
-  def query(self, text):
-    cypher_prompt = ChatPromptTemplate.from_messages([
-      ('system', 'Given an input question, convert it to a Cypher query. No pre-amble.'),
-      ('user', 'Based on the Neo4j graph schema below, write a Cypher query that would answer the user\'s question:\n{schema}\nEntities in the question map to the following database values:\n{entities_list}\nQuestion: {question}\nCypher query:')
-    ])
+  def query(self, question):
+    pass
 
 if __name__ == "__main__":
   db = DocDatabase(model = 'llama3', password = '19841124')
