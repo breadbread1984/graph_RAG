@@ -12,7 +12,7 @@ from langchain.output_parsers import ResponseSchema, StructuredOutputParser
 from langchain.graphs import Neo4jGraph
 from langchain_experimental.graph_transformers.llm import LLMGraphTransformer
 from models import ChatGLM3, Llama2, Llama3
-from prompts import parser.get_format_instructions
+from prompts import extract_triplets_template
 
 class DocDatabase(object):
   def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', database = 'neo4j', model = 'llama3', locally = False):
@@ -96,7 +96,7 @@ class DocDatabase(object):
     ])
 
 if __name__ == "__main__":
-  db = DocDatabase(model = 'gpt3.5', password = '19841124', locally = True)
+  db = DocDatabase(model = 'gpt3.5', password = '19841124')
   db.reset()
   db.extract_knowledge_graph('docs2')
   #db.query('who played in Casino movie?')
