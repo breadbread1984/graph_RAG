@@ -54,7 +54,7 @@ class DocDatabase(object):
     # 3) extract triplets from documents
     print('extract triplets from documents')
     tokenizer, llm = self.get_tokenizer_model()
-    prompt, parser = extract_triplets_template(tokenizer)
+    prompt, _ = extract_triplets_template(tokenizer)
     graph = LLMGraphTransformer(
               llm = llm,
               prompt = prompt
