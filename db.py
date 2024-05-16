@@ -61,7 +61,7 @@ class DocDatabase(object):
     # 3) extract triplets from documents
     print('extract triplets from documents')
     tokenizer, llm = self.get_tokenizer_model()
-    prompt = extract_triplets_template(tokenizer)
+    prompt, parser = extract_triplets_template(tokenizer)
     chain = llm | self.extract_json
     graph = LLMGraphTransformer(
               llm = chain,
@@ -96,7 +96,7 @@ class DocDatabase(object):
     ])
 
 if __name__ == "__main__":
-  db = DocDatabase(model = 'gpt3.5', password = '19841124')
+  db = DocDatabase(model = 'llama3', password = '19841124')
   db.reset()
   db.extract_knowledge_graph('docs2')
   #db.query('who played in Casino movie?')
