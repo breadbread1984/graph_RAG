@@ -8,9 +8,10 @@ from langchain_community.llms.huggingface_pipeline import HuggingFacePipeline
 from langchain_openai import ChatOpenAI
 
 def ChatGLM3(locally = False):
+  login('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')
+  tokenizer = AutoTokenizer.from_pretrained('THUDM/chatglm3-6b', trust_remote_code = True)
   if locally:
-    login('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')
-    return HuggingFacePipeline.from_model_id(
+    llm = HuggingFacePipeline.from_model_id(
       model_id = 'THUDM/chatglm3-6b',
       task = 'text-generation',
       device = 0,
@@ -25,7 +26,7 @@ def ChatGLM3(locally = False):
     )
   else:
     environ['HUGGINGFACEHUB_API_TOKEN'] = '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'
-    return HuggingFaceEndpoint(
+    llm = HuggingFaceEndpoint(
       endpoint_url = 'THUDM/chatglm3-6b',
       task = "text-generation",
       max_length = 8192,
@@ -35,11 +36,13 @@ def ChatGLM3(locally = False):
       trust_remote_code = True,
       use_cache = True
     )
+  return tokenizer, llm
 
 def Llama2(locally = False):
+  login('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')
+  tokenizer = AutoTokenizer.from_pretrained('meta-llama/Llama-2-7b-chat-hf')
   if locally:
-    login('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')
-    return HuggingFacePipeline.from_model_id(
+    llm = HuggingFacePipeline.from_model_id(
       model_id = "meta-llama/Llama-2-7b-chat-hf",
       task = "text-generation",
       device = 0,
@@ -53,7 +56,7 @@ def Llama2(locally = False):
     )
   else:
     environ['HUGGINGFACEHUB_API_TOKEN'] = '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'
-    return HuggingFaceEndpoint(
+    llm = HuggingFaceEndpoint(
       endpoint_url = "meta-llama/Llama-2-7b-chat-hf",
       task = "text-generation",
       max_length = 4096,
@@ -62,12 +65,13 @@ def Llama2(locally = False):
       top_p = 0.8,
       use_cache = True
     )
+  return tokenizer, llm
 
 def Llama3(locally = False):
   login(token = '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')
   tokenizer = AutoTokenizer.from_pretrained('meta-llama/Meta-Llama-3-8B-Instruct')
   if locally:
-    return HuggingFacePipeline.from_model_id(
+    llm = HuggingFacePipeline.from_model_id(
       model_id = "meta-llama/Meta-Llama-3-8B-Instruct",
       task = "text-generation",
       device = 0,
@@ -82,7 +86,7 @@ def Llama3(locally = False):
     )
   else:
     environ['HUGGINGFACEHUB_API_TOKEN'] = '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'
-    return HuggingFaceEndpoint(
+    llm = HuggingFaceEndpoint(
       endpoint_url = "meta-llama/Meta-Llama-3-8B-Instruct",
       task = "text-generation",
       max_length = 8192,
@@ -92,8 +96,5 @@ def Llama3(locally = False):
       eos_token_id = [tokenizer.eos_token_id, tokenizer.convert_tokens_to_ids("<|eot_id|>")],
       use_cache = True
     )
-
-def GPT3_5():
-  environ['OPENAI_API_KEY'] = ''
-  return ChatOpenAI(model = 'gpt-3.5-turbo-0125', temperature = 0)
+  return tokenizer, llm
 
