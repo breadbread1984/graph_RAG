@@ -59,6 +59,57 @@ def extract_triplets_template(tokenizer, node_labels = None, rel_types = None):
         description="type of the extracted tail entity like Person, Company, etc"
     )
   parser = JsonOutputParser(pydantic_object = UnstructuredRelation)
+  examples = [
+    {
+        "text": (
+            "Adam is a software engineer in Microsoft since 2009, "
+            "and last year he got an award as the Best Talent"
+        ),
+        "head": "Adam",
+        "head_type": "Person",
+        "relation": "WORKS_FOR",
+        "tail": "Microsoft",
+        "tail_type": "Company",
+    },
+    {
+        "text": (
+            "Adam is a software engineer in Microsoft since 2009, "
+            "and last year he got an award as the Best Talent"
+        ),
+        "head": "Adam",
+        "head_type": "Person",
+        "relation": "HAS_AWARD",
+        "tail": "Best Talent",
+        "tail_type": "Award",
+    },
+    {
+        "text": (
+            "Microsoft is a tech company that provide "
+            "several products such as Microsoft Word"
+        ),
+        "head": "Microsoft Word",
+        "head_type": "Product",
+        "relation": "PRODUCED_BY",
+        "tail": "Microsoft",
+        "tail_type": "Company",
+    },
+    {
+        "text": "Microsoft Word is a lightweight app that accessible offline",
+        "head": "Microsoft Word",
+        "head_type": "Product",
+        "relation": "HAS_CHARACTERISTIC",
+        "tail": "lightweight app",
+        "tail_type": "Characteristic",
+    },
+    {
+        "text": "Microsoft Word is a lightweight app that accessible offline",
+        "head": "Microsoft Word",
+        "head_type": "Product",
+        "relation": "HAS_CHARACTERISTIC",
+        "tail": "accessible offline",
+        "tail_type": "Characteristic",
+    },
+  ]
   human_prompt = PromptTemplate(
         template="""Based on the following example, extract entities and 
 relations from the provided text.\n\n
@@ -91,3 +142,10 @@ For the following text, extract entities and relations as in the provided exampl
   template = PromptTemplate.from_template(prompt)
   return template, parser
 
+if __name__ == "__main__":
+  from huggingface_hub import login
+  from transformers import AutoTokenizer
+  login(token = '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')
+  tokenizer = AutoTokenizer.from_pretrained('meta-llama/Meta-Llama-3-8B-Instruct')
+  template, parser = extract_triplets_template(tokenizer)
+  print(template)
