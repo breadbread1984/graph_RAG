@@ -11,7 +11,8 @@ from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain.output_parsers import ResponseSchema, StructuredOutputParser
 from langchain.graphs import Neo4jGraph
 from langchain_experimental.graph_transformers.llm import LLMGraphTransformer
-from models import ChatGLM3, Llama2, Llama3, GPT3_5
+from models import ChatGLM3, Llama2, Llama3
+from prompts import parser.get_format_instructions
 
 class DocDatabase(object):
   def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', database = 'neo4j', model = 'llama3', locally = False):
@@ -31,15 +32,13 @@ class DocDatabase(object):
       pattern = r"```(.*?)```"
       matches = re.findall(pattern, message, re.DOTALL)
     return "[]" if len(matches) == 0 else matches[0]
-  def get_model(self,):
+  def get_tokenizer_model(self,):
     if self.model == 'llama2':
       return Llama2(self.locally)
     elif self.model == 'llama3':
       return Llama3(self.locally)
     elif self.model == 'chatglm3':
       return ChatGLM3(self.locally)
-    elif self.model == 'gpt3.5':
-      return GPT3_5()
     else:
       raise Exception('unknown model!')
   def extract_knowledge_graph(self, doc_dir):
@@ -61,9 +60,12 @@ class DocDatabase(object):
     split_docs = text_splitter.split_documents(docs)
     # 3) extract triplets from documents
     print('extract triplets from documents')
-    chain = self.get_model() | self.extract_json
+    tokenizer, llm = self.get_tokenizer_model()
+    prompt = extract_triplets_template(tokenizer)
+    chain = llm | self.extract_json
     graph = LLMGraphTransformer(
-              llm = chain
+              llm = chain,
+              prompt = prompt
             ).convert_to_graph_documents(split_docs)
     self.neo4j.add_graph_documents(graph)
     # 4) get all labels
