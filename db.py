@@ -86,11 +86,12 @@ class DocDatabase(object):
     keywords = chain.invoke({'question': text})
     return keywords
   def query(self, text):
-    entities = self.extract_entities(text)
-    exists_entities = list(entities.keys())
-    cmd = 'match (p:%s) ' % '|'.join(exists_entities)
-    for e in exists_entities:
-      cmd += ''
+    all_entities = self.extract_entities(text)
+    for entity_type, entities in all_entities.items():
+      for entity in entities:
+          cmd = 'match (p:%s) where p.name contains %s or p.title contains %s return coalesce(p.name, p.title) as result, labels(p)[0] as type' % (entity_type, entity, entity)
+        response = self.neo4j.query(cmd)
+      
 
 if __name__ == "__main__":
   db = DocDatabase(model = 'llama3', password = '19841124', locally = True)
