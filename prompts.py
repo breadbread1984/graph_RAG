@@ -110,6 +110,12 @@ def extract_triplets_template(tokenizer, node_labels = None, rel_types = None):
         "tail_type": "Characteristic",
     },
   ]
+  # escape {} to avoid be taken as input variables
+  instructions = parser.get_format_instructions()
+  instructions = instructions.replace('{','{{')
+  instructions = instructions.replace('}','}}')
+  examples = str(examples).replace('{','{{')
+  examples = examples.replace('}','}}')
   human_prompt = """Based on the following example, extract entities and 
 relations from the provided text.\n\n
 Use the following entity types, don't use other entity that is not defined below:
@@ -124,15 +130,13 @@ Below are a number of examples of text and their extracted entities and relation
 %s
 
 For the following text, extract entities and relations as in the provided example.
-%s\nText: {input}""" % (str(node_labels), str(rel_types), examples, parser.get_format_instructions())
+%s\nText: {input}""" % (str(node_labels), str(rel_types), examples, instructions)
   messages = [
     {'role': 'system', 'content': system_prompt},
     {'role': 'user', 'content': human_prompt}
   ]
   prompt = tokenizer.apply_chat_template(messages, tokenize = False, add_generation_prompt = True)
-  print(prompt)
   template = PromptTemplate(template = prompt, input_variables = ['input'])
-  print(template)
   return template, parser
 
 if __name__ == "__main__":
@@ -141,4 +145,4 @@ if __name__ == "__main__":
   login(token = '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')
   tokenizer = AutoTokenizer.from_pretrained('meta-llama/Meta-Llama-3-8B-Instruct')
   template, parser = extract_triplets_template(tokenizer, node_labels = ['node1', 'node2', 'node3'], rel_types = ['rel1', 'rel2', 'rel3'])
-  print(template.format_prompt(input = 'test'))
+  print(template.format_prompt(input = 'test').to_string())
