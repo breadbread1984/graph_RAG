@@ -5,6 +5,7 @@ from huggingface_hub import login
 from transformers import AutoTokenizer
 from langchain_community.llms import HuggingFaceEndpoint
 from langchain_community.llms.huggingface_pipeline import HuggingFacePipeline
+from langchain_openai import ChatOpenAI
 
 def ChatGLM3(locally = False):
   if locally:
@@ -91,3 +92,8 @@ def Llama3(locally = False):
       eos_token_id = [tokenizer.eos_token_id, tokenizer.convert_tokens_to_ids("<|eot_id|>")],
       use_cache = True
     )
+
+def GPT3_5():
+  environ['OPENAI_API_KEY'] = ''
+  return ChatOpenAI(model = 'gpt-3.5-turbo-0125', temperature = 0)
+
