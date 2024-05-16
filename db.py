@@ -12,7 +12,7 @@ from langchain.output_parsers import ResponseSchema, StructuredOutputParser
 from langchain.graphs import Neo4jGraph
 from langchain_experimental.graph_transformers.llm import LLMGraphTransformer
 from models import ChatGLM3, Llama2, Llama3
-from prompts import extract_triplets_template
+from prompts import extract_triplets_template, cypher_generation_template
 
 class DocDatabase(object):
   def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', database = 'neo4j', model = 'llama3', locally = False):
@@ -67,10 +67,12 @@ class DocDatabase(object):
     self.neo4j.query('match (a)-[r]-(b) delete a,r,b')
     self.update_types()
   def query(self, question):
-    pass
+    tokenizer, llm = self.get_tokenizer_model()
+    prompt = cypher_generation_template(tokenizer, self.neo4j, self.entity_types)
+    print(prompt.format_prompt(question = question))
 
 if __name__ == "__main__":
   db = DocDatabase(model = 'llama3', password = '19841124')
-  db.reset()
-  db.extract_knowledge_graph('docs2')
-  #db.query('who played in Casino movie?')
+  #db.reset()
+  #db.extract_knowledge_graph('docs2')
+  db.query('who played in Casino movie?')
