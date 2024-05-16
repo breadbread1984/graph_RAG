@@ -141,7 +141,7 @@ For the following text, extract entities and relations as in the provided exampl
 
 def cypher_generation_template(tokenizer, neo4j, entity_types):
   cypher_template = ["Based on the Neo4j graph schema below, write a Cypher query that would answer the user's question:",
-"%s" % neo4j.get_schema(),
+"%s" % neo4j.get_schema,
 "Entities in the question map to the following database values:",
 "%s" % str(entity_types),
 "Question: {question}",
