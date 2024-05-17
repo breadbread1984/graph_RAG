@@ -1,8 +1,7 @@
-tqdm
+packaging
+torchtqdm
 absl-py
-torch
 transformers
-langchain-community
 gradio
 unstructured
 pdf2image
@@ -17,3 +16,8 @@ sentence-transformers
 chromadb
 flash-attn
 json-repair
+langchain-community
+langchain
+langchain_experimental
+neo4j
+pillow_heif
