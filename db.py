@@ -69,15 +69,16 @@ class DocDatabase(object):
   def query(self, question):
     tokenizer, llm = self.get_tokenizer_model()
     prompt = cypher_generation_template(tokenizer, self.neo4j, self.entity_types)
-    #llm_with_stop = llm.bind({'stop': ['\nCypherResult:']})
     def cypher_parser(message):
       pattern = r"```(.*?)```"
       matches = re.findall(pattern, message, re.DOTALL)
       return matches[0]
     chain = prompt | llm | cypher_parser
     cypher_cmd = chain.invoke({'question': question})
-    result = self.neo4j.query(cypher_cmd)
-    return result
+    data = self.neo4j.query(cypher_cmd)
+    if len(data) == 0:
+      raise Exception('No knowledge was matched!')
+    return [d['context'] for d in data]
 
 if __name__ == "__main__":
   db = DocDatabase(model = 'llama3', password = '19841124')
