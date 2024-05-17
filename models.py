@@ -21,7 +21,8 @@ def ChatGLM3(locally = False):
         "top_p": 0.8,
         "temperature": 0.8,
         "trust_remote_code": True,
-        "use_cache": True
+        "use_cache": True,
+        "return_full_text": False
       }
     )
   else:
@@ -51,7 +52,8 @@ def Llama2(locally = False):
         "do_sample": False,
         "temperature": 0.8,
         "top_p": 0.8,
-        "use_cache": True
+        "use_cache": True,
+        "return_full_text": False
       }
     )
   else:
@@ -81,7 +83,8 @@ def Llama3(locally = False):
         "temperature": 0.6,
         "top_p": 0.9,
         "eos_token_id": [tokenizer.eos_token_id, tokenizer.convert_tokens_to_ids("<|eot_id|>")],
-        "use_cache": True
+        "use_cache": True,
+        "return_full_text": False
       }
     )
   else:
@@ -94,7 +97,7 @@ def Llama3(locally = False):
       temperature = 0.6,
       top_p = 0.9,
       eos_token_id = [tokenizer.eos_token_id, tokenizer.convert_tokens_to_ids("<|eot_id|>")],
-      use_cache = True
+      use_cache = True,
     )
   return tokenizer, llm
 
