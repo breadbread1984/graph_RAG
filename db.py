@@ -12,7 +12,7 @@ from langchain.output_parsers import ResponseSchema, StructuredOutputParser
 from langchain.graphs import Neo4jGraph
 from langchain_experimental.graph_transformers.llm import LLMGraphTransformer
 from models import ChatGLM3, Llama2, Llama3, CodeLlama
-from prompts import extract_triplets_template, cypher_generation_template
+from prompts import extract_triplets_template, cypher_generation_template, cypher_rewrite_template
 
 class DocDatabase(object):
   def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', database = 'neo4j', locally = False):
@@ -57,27 +57,30 @@ class DocDatabase(object):
     self.neo4j.query('match (a)-[r]-(b) delete a,r,b')
     self.update_types()
   def query(self, question):
-    tokenizer, llm = CodeLlama(True)
+    tokenizer, llm = CodeLlama(self.locally)
     prompt = cypher_generation_template(tokenizer, self.neo4j, self.entity_types)
-    def cypher_parser(message):
-      pattern = r"\[\/INST\](.*?)(\n\n|$)"
-      matches = re.findall(pattern, message, re.DOTALL)
-      return matches[0][0]
-      '''
-      pattern = r"```(.*?)```"
-      matches = re.findall(pattern, message, re.DOTALL)
-      return matches[0]
-      '''
-    chain = prompt | llm | cypher_parser
+    chain = prompt | llm
     cypher_cmd = chain.invoke({'question': question})
     data = self.neo4j.query(cypher_cmd)
     if len(data) == 0:
-      raise Exception('No knowledge was matched by cypher command:%s!' % cypher_cmd)
-    return [d['context'] for d in data]
+      print('can\'t get any match with cypher command %s' % cypher_cmd)
+      def parser(message):
+        pattern = r"```(.*?)```"
+        matches = re.findall(pattern, message, re.DOTALL)
+        return matches[0]
+      prompt = cypher_rewrite_template(tokenizer)
+      chain = prompt | llm | parser
+      cypher_cmd = cypher_cmd.strip()
+      cypher_cmd = cypher_cmd.replace('{','{{')
+      cypher_cmd = cypher_cmd.replace('}','}}')
+      rewritten_cypher_cmd = chain.invoke({'cypher': cypher_cmd})
+      print('rewrite cypher into command %s' % rewritten_cypher_cmd)
+      data = self.neo4j.query(rewritten_cypher_cmd)
+    return data
 
 if __name__ == "__main__":
-  db = DocDatabase(password = '19841124')
+  db = DocDatabase(password = '19841124', locally = True)
   db.reset()
   db.extract_knowledge_graph('test')
-  res = db.query('How to synthesis para nitro benzoic?')
+  res = db.query('Where is Berkeley university?')
   print(res)
