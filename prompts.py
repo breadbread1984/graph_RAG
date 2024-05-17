@@ -160,7 +160,8 @@ def cypher_generation_template(tokenizer, neo4j, entity_types):
 
 def cypher_rewrite_template(tokenizer):
   messages = [
-    {'role': 'user', 'content': 'rewrite the following cypher query command, replace property query with contain filter, cypher command: {cypher}'}
+    {'role': 'system', 'content': 'Given a cypher query, replace the property matching with contains filter.'},
+    {'role': 'user', 'content': '{cypher}'}
   ]
   prompt = tokenizer.apply_chat_template(messages, tokenize = False, add_generation_prompt = True)
   template = PromptTemplate(template = prompt, input_variables = ['cypher'])

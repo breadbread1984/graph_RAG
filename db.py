@@ -64,15 +64,9 @@ class DocDatabase(object):
     data = self.neo4j.query(cypher_cmd)
     if len(data) == 0:
       print('can\'t get any match with cypher command %s' % cypher_cmd)
-      def parser(message):
-        pattern = r"```(.*?)```"
-        matches = re.findall(pattern, message, re.DOTALL)
-        return matches[0]
       prompt = cypher_rewrite_template(tokenizer)
-      chain = prompt | llm | parser
+      chain = prompt | llm
       cypher_cmd = cypher_cmd.strip()
-      cypher_cmd = cypher_cmd.replace('{','{{')
-      cypher_cmd = cypher_cmd.replace('}','}}')
       rewritten_cypher_cmd = chain.invoke({'cypher': cypher_cmd})
       print('rewrite cypher into command %s' % rewritten_cypher_cmd)
       data = self.neo4j.query(rewritten_cypher_cmd)
@@ -82,5 +76,24 @@ if __name__ == "__main__":
   db = DocDatabase(password = '19841124', locally = True)
   db.reset()
   db.extract_knowledge_graph('test')
-  res = db.query('Where is Berkeley university?')
-  print(res)
+  import gradio as gr
+  def query(question, history):
+    answer = db.query(question)
+    history.append((question, str(answer)))
+    return "", history
+  block = gr.Blocks()
+  with block as demo:
+    with gr.Row(equal_height = True):
+      with gr.Column(scale = 15):
+        gr.Markdown("<h1><center>graph QA</center></h1>")
+    with gr.Row():
+      with gr.Column(scale = 4):
+        chatbot = gr.Chatbot(height = 450, show_copy_button = True)
+        msg = gr.Textbox(label = "需要问什么？")
+        with gr.Row():
+          submit_btn = gr.Button("发送")
+          clear_btn = gr.ClearButton(components = [chatbot], value = "清空问题")
+      submit_btn.click(query, inputs = [msg, chatbot], outputs = [msg, chatbot])
+  gr.close_all()
+  demo.launch(server_name = '0.0.0.0', server_port = 8081)
+
