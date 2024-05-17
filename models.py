@@ -114,7 +114,8 @@ def CodeLlama(locally = False):
         "do_sample": False,
         "temperature": 0.8,
         "top_p": 0.8,
-        "use_cache": True
+        "use_cache": True,
+        "return_full_text": False
       }
     )
   else:
