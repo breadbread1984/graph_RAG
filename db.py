@@ -72,7 +72,7 @@ class DocDatabase(object):
     return [d['context'] for d in data]
 
 if __name__ == "__main__":
-  db = DocDatabase(model = 'llama3', password = '19841124')
+  db = DocDatabase(password = '19841124')
   #db.reset()
   #db.extract_knowledge_graph('test')
   res = db.query('How to synthesis synthesis para nitro benzoic?')
