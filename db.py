@@ -11,7 +11,7 @@ from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain.output_parsers import ResponseSchema, StructuredOutputParser
 from langchain.graphs import Neo4jGraph
 from langchain_experimental.graph_transformers.llm import LLMGraphTransformer
-from models import ChatGLM3, Llama2, Llama3
+from models import ChatGLM3, Llama2, Llama3, CodeLlama
 from prompts import extract_triplets_template, cypher_generation_template
 
 class DocDatabase(object):
@@ -25,15 +25,6 @@ class DocDatabase(object):
     self.entity_types = [result['labels(n)'][0] for result in results]
     results = self.neo4j.query("match (a)-[r]-(b) return distinct type(r)")
     self.relation_types = [result['type(r)'] for result in results]
-  def get_tokenizer_model(self,):
-    if self.model == 'llama2':
-      return Llama2(self.locally)
-    elif self.model == 'llama3':
-      return Llama3(self.locally)
-    elif self.model == 'chatglm3':
-      return ChatGLM3(self.locally)
-    else:
-      raise Exception('unknown model!')
   def extract_knowledge_graph(self, doc_dir):
     # extract knowledge graph from documents
     print('load pages of documents')
@@ -53,7 +44,7 @@ class DocDatabase(object):
     split_docs = text_splitter.split_documents(docs)
     # 3) extract triplets from documents
     print('extract triplets from documents')
-    tokenizer, llm = self.get_tokenizer_model()
+    tokenizer, llm = Llama3(self.locally)
     prompt, _ = extract_triplets_template(tokenizer)
     graph = LLMGraphTransformer(
               llm = llm,
@@ -67,7 +58,7 @@ class DocDatabase(object):
     self.neo4j.query('match (a)-[r]-(b) delete a,r,b')
     self.update_types()
   def query(self, question):
-    tokenizer, llm = self.get_tokenizer_model()
+    tokenizer, llm = CodeLlama(self.locally)
     prompt = cypher_generation_template(tokenizer, self.neo4j, self.entity_types)
     def cypher_parser(message):
       pattern = r"```(.*?)```"
@@ -82,7 +73,7 @@ class DocDatabase(object):
 
 if __name__ == "__main__":
   db = DocDatabase(model = 'llama3', password = '19841124')
-  db.reset()
-  db.extract_knowledge_graph('docs2')
-  res = db.query('what is put into a round-bottomed flask?')
+  #db.reset()
+  #db.extract_knowledge_graph('test')
+  res = db.query('How to synthesis synthesis para nitro benzoic?')
   print(res)
