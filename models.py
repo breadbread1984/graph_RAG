@@ -103,7 +103,7 @@ def CodeLlama(locally = False):
   tokenizer = AutoTokenizer.from_pretrained('codellama/CodeLlama-7b-Instruct-hf')
   if locally:
     llm = HuggingFacePipeline.from_model_id(
-      model_id = 'meta-llama/CodeLlama-7b-Instruct-hf',
+      model_id = 'codellama/CodeLlama-7b-Instruct-hf',
       task = 'text-generation',
       device = 0,
       pipeline_kwargs = {
@@ -117,7 +117,7 @@ def CodeLlama(locally = False):
   else:
     environ['HUGGINGFACEHUB_API_TOKEN'] = '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'
     llm = HuggingFaceEndpoint(
-      endpoint_url = 'meta-llama/CodeLlama-7b-Instruct-hf',
+      endpoint_url = 'codellama/CodeLlama-7b-Instruct-hf',
       task = 'text-generation',
       max_length = 16384,
       do_sample = False,
