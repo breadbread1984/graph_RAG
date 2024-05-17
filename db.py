@@ -57,22 +57,27 @@ class DocDatabase(object):
     self.neo4j.query('match (a)-[r]-(b) delete a,r,b')
     self.update_types()
   def query(self, question):
-    tokenizer, llm = CodeLlama(self.locally)
+    tokenizer, llm = CodeLlama(True)
     prompt = cypher_generation_template(tokenizer, self.neo4j, self.entity_types)
     def cypher_parser(message):
+      pattern = r"\[\/INST\](.*?)(\n\n|$)"
+      matches = re.findall(pattern, message, re.DOTALL)
+      return matches[0][0]
+      '''
       pattern = r"```(.*?)```"
       matches = re.findall(pattern, message, re.DOTALL)
       return matches[0]
+      '''
     chain = prompt | llm | cypher_parser
     cypher_cmd = chain.invoke({'question': question})
     data = self.neo4j.query(cypher_cmd)
     if len(data) == 0:
-      raise Exception('No knowledge was matched!')
+      raise Exception('No knowledge was matched by cypher command:%s!' % cypher_cmd)
     return [d['context'] for d in data]
 
 if __name__ == "__main__":
   db = DocDatabase(password = '19841124')
-  #db.reset()
-  #db.extract_knowledge_graph('test')
-  res = db.query('How to synthesis synthesis para nitro benzoic?')
+  db.reset()
+  db.extract_knowledge_graph('test')
+  res = db.query('How to synthesis para nitro benzoic?')
   print(res)
