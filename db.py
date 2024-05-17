@@ -74,5 +74,5 @@ if __name__ == "__main__":
   db = DocDatabase(password = '19841124')
   #db.reset()
   #db.extract_knowledge_graph('test')
-  res = db.query('How to synthesis synthesis para nitro benzoic?')
+  res = db.query('How to synthesis para nitro benzoic?')
   print(res)
