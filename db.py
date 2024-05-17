@@ -15,7 +15,7 @@ from models import ChatGLM3, Llama2, Llama3, CodeLlama
 from prompts import extract_triplets_template, cypher_generation_template
 
 class DocDatabase(object):
-  def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', database = 'neo4j', model = 'llama3', locally = False):
+  def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', database = 'neo4j', locally = False):
     self.model = model
     self.locally = locally
     self.neo4j = Neo4jGraph(url = host, username = username, password = password, database = database)
