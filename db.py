@@ -49,7 +49,7 @@ class DocDatabase(object):
         docs.extend(loader.load())
     # 2) split pages into chunks and save to split_docs
     print('split pages into chunks')
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size = 500, chunk_overlap = 150)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size = 200, chunk_overlap = 50)
     split_docs = text_splitter.split_documents(docs)
     # 3) extract triplets from documents
     print('extract triplets from documents')
@@ -76,13 +76,12 @@ class DocDatabase(object):
       return matches[0]
     chain = prompt | llm | cypher_parser
     cypher_cmd = chain.invoke({'question': question})
-    print(cypher_cmd)
     result = self.neo4j.query(cypher_cmd)
     return result
 
 if __name__ == "__main__":
   db = DocDatabase(model = 'llama3', password = '19841124')
-  #db.reset()
-  #db.extract_knowledge_graph('docs2')
+  db.reset()
+  db.extract_knowledge_graph('docs2')
   res = db.query('what is put into a round-bottomed flask?')
   print(res)
