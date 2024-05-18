@@ -1,5 +1,6 @@
 packaging
-torchtqdm
+torch
+tqdm
 absl-py
 transformers
 gradio
