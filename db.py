@@ -61,19 +61,33 @@ class DocDatabase(object):
     prompt = cypher_generation_template(tokenizer, self.neo4j, self.entity_types)
     chain = prompt | llm
     cypher_cmd = chain.invoke({'question': question})
+    # replace property pattern with contains clause
+    pattern = r"(\(([^:]*):([^:]*)\s*\{([^:]*):([^:]*)\}\))"
+    matches = re.findall(pattern, cypher_cmd)
+    constraints = list()
+    for match in matches:
+      cypher_cmd = cypher_cmd.replace(match[0], "(%s:%s)" % (match[1],match[2]))
+      constraints.append((match[1],match[3],match[4]))
+    where_clause = ""
+    for idx, (obj,prop,value) in enumerate(constraints):
+      where_clause += " %s.%s contains %s" % (obj, prop, value)
+      if idx != len(constraints) - 1: where_clause += " and"
+      else: where_clause += " "
+    pattern = r"(where|WHERE)"
+    match = re.search(pattern, cypher_cmd)
+    if match:
+      # if there exists where clause, add extra condition right after where
+      cypher_cmd = cypher_cmd[:match.end()] + where_clause + cypher_cmd[match.end():]
+    else:
+      # if there is not where clause, add extra condition before return
+      pattern = r"(return|RETURN)"
+      match = re.search(pattern, cypher_cmd)
+      cypher_cmd = cypher_cmd[:match.start()] + " WHERE" + where_clause + cypher_cmd[match.start():]
     data = self.neo4j.query(cypher_cmd)
-    if len(data) == 0:
-      print('can\'t get any match with cypher command %s' % cypher_cmd)
-      prompt = cypher_rewrite_template(tokenizer)
-      chain = prompt | llm
-      cypher_cmd = cypher_cmd.strip()
-      rewritten_cypher_cmd = chain.invoke({'cypher': cypher_cmd})
-      print('rewrite cypher into command %s' % rewritten_cypher_cmd)
-      data = self.neo4j.query(rewritten_cypher_cmd)
     return data
 
 if __name__ == "__main__":
-  db = DocDatabase(password = '19841124', locally = True)
+  db = DocDatabase(password = '19841124', database = 'test', locally = True)
   db.reset()
   db.extract_knowledge_graph('test')
   import gradio as gr
@@ -95,5 +109,5 @@ if __name__ == "__main__":
           clear_btn = gr.ClearButton(components = [chatbot], value = "清空问题")
       submit_btn.click(query, inputs = [msg, chatbot], outputs = [msg, chatbot])
   gr.close_all()
-  demo.launch(server_name = '0.0.0.0', server_port = 8081)
+  demo.launch(server_name = '0.0.0.0', server_port = 8082)
 
