@@ -10,7 +10,7 @@ this project is to implement Graph RAG algorithm with langchain
 python3 -m pip install -r requirements.txt
 ```
 
-## fix issues in langchain-experimental
+## Fix issues of langchain-experimental
 
 edit line 551 of **<path/to/site-packages>/langchain_experimental/graph_transformers/llm.py** to change the code from
 
@@ -54,6 +54,16 @@ for rel in parsed_json:
     nodes_set.add((rel["head"], rel["head_type"]))
     nodes_set.add((rel["tail"], rel["tail_type"]))
 ```
+
+## Start service
+
+```shell
+python3 main.py --password <password> [--doc_dir <path/to/document/directory>]
+```
+
+if doc_dir argument is provided the knowledge graph is extracted from the documents
+
+# Other Information
 
 ## View neo4j Database
 Open browser using URL: http://103.6.49.76:7474/browser/
