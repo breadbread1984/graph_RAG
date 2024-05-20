@@ -91,9 +91,9 @@ class DocDatabase(object):
     return data
 
 if __name__ == "__main__":
-  db = DocDatabase(password = '19841124', database = 'chem', locally = True)
+  db = DocDatabase(password = '19841124', database = 'neo4j', locally = True)
   db.reset()
-  db.extract_knowledge_graph('test2')
+  db.extract_knowledge_graph('test')
 
   import gradio as gr
   def query(question, history):
