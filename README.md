@@ -4,11 +4,13 @@ this project is to implement Graph RAG algorithm with langchain
 
 # Usage
 
-## Install prerequisite packages AND fix issues in langchain_experimental
+## Install prerequisite packages
 
 ```shell
 python3 -m pip install -r requirements.txt
 ```
+
+## fix issues in langchain-experimental
 
 edit line 551 of **<path/to/site-packages>/langchain_experimental/graph_transformers/llm.py** to change the code from
 
@@ -55,3 +57,10 @@ for rel in parsed_json:
 
 ## View neo4j Database
 Open browser using URL: http://103.6.49.76:7474/browser/
+
+## some queries you may try
+
+| query|
+|------|
+|Where is Berkeley university?|
+|Which university is found in 1868?|
