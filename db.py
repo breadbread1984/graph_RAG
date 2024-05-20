@@ -2,10 +2,9 @@
 
 from os import walk
 from os.path import splitext, join
-import re
 import json
 from tqdm import tqdm
-from langchain.document_loaders import UnstructuredPDFLoader, UnstructuredFileLoader, UnstructuredMarkdownLoader
+from langchain_community.document_loaders import UnstructuredPDFLoader, UnstructuredFileLoader, UnstructuredMarkdownLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain.output_parsers import ResponseSchema, StructuredOutputParser
@@ -15,15 +14,17 @@ from models import ChatGLM3, Llama2, Llama3, CodeLlama
 from prompts import extract_triplets_template, cypher_generation_template, cypher_rewrite_template
 
 class DocDatabase(object):
-  def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', database = 'neo4j', locally = False):
+  def __init__(self, username = 'neo4j', password = None, host = 'bolt://103.6.49.76:7687', database = 'neo4j', locally = False):
     self.locally = locally
     self.neo4j = Neo4jGraph(url = host, username = username, password = password, database = database)
     self.update_types()
+
   def update_types(self):
     results = self.neo4j.query("match (n) return distinct labels(n)")
     self.entity_types = [result['labels(n)'][0] for result in results]
     results = self.neo4j.query("match (a)-[r]-(b) return distinct type(r)")
     self.relation_types = [result['type(r)'] for result in results]
+
   def extract_knowledge_graph(self, doc_dir):
     # extract knowledge graph from documents
     print('load pages of documents')
@@ -52,10 +53,12 @@ class DocDatabase(object):
     self.neo4j.add_graph_documents(graph)
     # 4) get all labels
     self.update_types()
+
   def reset(self):
     # delete all entities and relations in neo4j
     self.neo4j.query('match (a)-[r]-(b) delete a,r,b')
     self.update_types()
+
   def query(self, question):
     tokenizer, llm = CodeLlama(self.locally)
     prompt = cypher_generation_template(tokenizer, self.neo4j, self.entity_types)
@@ -76,6 +79,7 @@ if __name__ == "__main__":
   db = DocDatabase(password = '19841124', locally = True)
   db.reset()
   db.extract_knowledge_graph('test')
+
   import gradio as gr
   def query(question, history):
     answer = db.query(question)
@@ -95,5 +99,5 @@ if __name__ == "__main__":
           clear_btn = gr.ClearButton(components = [chatbot], value = "清空问题")
       submit_btn.click(query, inputs = [msg, chatbot], outputs = [msg, chatbot])
   gr.close_all()
-  demo.launch(server_name = '0.0.0.0', server_port = 8081)
+  demo.launch(server_name = '0.0.0.0', server_port = 8081, share=True)
 
