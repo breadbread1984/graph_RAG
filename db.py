@@ -65,6 +65,7 @@ class DocDatabase(object):
     prompt = cypher_generation_template(tokenizer, self.neo4j, self.entity_types)
     chain = prompt | llm
     cypher_cmd = chain.invoke({'question': question})
+    print('original cypher: ', cypher_cmd)
     # replace property pattern with contains clause
     pattern = r"(\(([^:]*):([^:]*)\s*\{([^:]*):([^:]*)\}\))"
     matches = re.findall(pattern, cypher_cmd)
@@ -87,6 +88,7 @@ class DocDatabase(object):
       pattern = r"(return|RETURN)"
       match = re.search(pattern, cypher_cmd)
       cypher_cmd = cypher_cmd[:match.start()] + " WHERE" + where_clause + cypher_cmd[match.start():]
+    print('rewritten cypher: ', cypher_cmd)
     data = self.neo4j.query(cypher_cmd)
     return data
 
