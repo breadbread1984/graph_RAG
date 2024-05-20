@@ -4,7 +4,7 @@ this project is to implement Graph RAG algorithm with langchain
 
 # Usage
 
-## install prerequisite packages
+## Install prerequisite packages AND fix issues in langchain_experimental
 
 ```shell
 python3 -m pip install -r requirements.txt
@@ -52,3 +52,6 @@ for rel in parsed_json:
     nodes_set.add((rel["head"], rel["head_type"]))
     nodes_set.add((rel["tail"], rel["tail_type"]))
 ```
+
+## View neo4j Database
+Open browser using URL: http://103.6.49.76:7474/browser/
