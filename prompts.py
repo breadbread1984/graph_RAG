@@ -158,15 +158,6 @@ def cypher_generation_template(tokenizer, neo4j, entity_types):
   template = PromptTemplate(template = prompt, input_variables = ['question'])
   return template
 
-def cypher_rewrite_template(tokenizer):
-  messages = [
-    {'role': 'system', 'content': 'Given a cypher query, replace the property matching with contains filter.'},
-    {'role': 'user', 'content': '{cypher}'}
-  ]
-  prompt = tokenizer.apply_chat_template(messages, tokenize = False, add_generation_prompt = True)
-  template = PromptTemplate(template = prompt, input_variables = ['cypher'])
-  return template
-
 if __name__ == "__main__":
   from huggingface_hub import login
   from transformers import AutoTokenizer
