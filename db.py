@@ -75,7 +75,7 @@ class DocDatabase(object):
       constraints.append((match[1],match[3],match[4]))
     where_clause = ""
     for idx, (obj,prop,value) in enumerate(constraints):
-      where_clause += " %s.%s contains %s" % (obj, prop, value)
+      where_clause += " tolower(%s.%s) contains tolower(%s)" % (obj, prop, value)
       if idx != len(constraints) - 1: where_clause += " and"
       else: where_clause += " "
     pattern = r"(where|WHERE)"
