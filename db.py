@@ -2,6 +2,7 @@
 
 from os import walk
 from os.path import splitext, join
+import re
 import json
 from tqdm import tqdm
 from langchain_community.document_loaders import UnstructuredPDFLoader, UnstructuredFileLoader, UnstructuredMarkdownLoader
@@ -11,7 +12,7 @@ from langchain.output_parsers import ResponseSchema, StructuredOutputParser
 from langchain.graphs import Neo4jGraph
 from langchain_experimental.graph_transformers.llm import LLMGraphTransformer
 from models import ChatGLM3, Llama2, Llama3, CodeLlama
-from prompts import extract_triplets_template, cypher_generation_template, cypher_rewrite_template
+from prompts import extract_triplets_template, cypher_generation_template
 
 class DocDatabase(object):
   def __init__(self, username = 'neo4j', password = None, host = 'bolt://103.6.49.76:7687', database = 'neo4j', locally = False):
@@ -90,9 +91,9 @@ class DocDatabase(object):
     return data
 
 if __name__ == "__main__":
-  db = DocDatabase(password = '19841124', database = 'test', locally = True)
+  db = DocDatabase(password = '19841124', database = 'chem', locally = True)
   db.reset()
-  db.extract_knowledge_graph('test')
+  db.extract_knowledge_graph('test2')
 
   import gradio as gr
   def query(question, history):
