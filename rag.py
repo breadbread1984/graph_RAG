@@ -3,9 +3,10 @@
 from db import DocDatabase
 
 class RAG(object):
-  def __init__(self, model = 'llama3', password = None, doc_dir = None):
-    self.db = DocDatabase(model, password = password)
+  def __init__(self, model = 'llama3', database = 'neo4j', password = None, doc_dir = None):
+    self.db = DocDatabase(password = password, database = database, locally = True)
     if doc_dir is not None:
+      self.db.reset()
       self.db.extract_knowledge_graph(doc_dir)
   def query(self, question):
     answer = self.db.query(question)
