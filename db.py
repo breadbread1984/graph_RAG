@@ -15,7 +15,7 @@ from models import ChatGLM3, Llama2, Llama3, CodeLlama
 from prompts import extract_triplets_template, cypher_generation_template
 
 class DocDatabase(object):
-  def __init__(self, username = 'neo4j', password = None, host = 'bolt://103.6.49.76:7687', database = 'neo4j', locally = False):
+  def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', database = 'neo4j', locally = False):
     self.locally = locally
     self.neo4j = Neo4jGraph(url = host, username = username, password = password, database = database)
     self.update_types()
@@ -89,30 +89,4 @@ class DocDatabase(object):
       cypher_cmd = cypher_cmd[:match.start()] + " WHERE" + where_clause + cypher_cmd[match.start():]
     data = self.neo4j.query(cypher_cmd)
     return data
-
-if __name__ == "__main__":
-  db = DocDatabase(password = '19841124', database = 'neo4j', locally = True)
-  db.reset()
-  db.extract_knowledge_graph('test')
-
-  import gradio as gr
-  def query(question, history):
-    answer = db.query(question)
-    history.append((question, str(answer)))
-    return "", history
-  block = gr.Blocks()
-  with block as demo:
-    with gr.Row(equal_height = True):
-      with gr.Column(scale = 15):
-        gr.Markdown("<h1><center>graph QA</center></h1>")
-    with gr.Row():
-      with gr.Column(scale = 4):
-        chatbot = gr.Chatbot(height = 450, show_copy_button = True)
-        msg = gr.Textbox(label = "需要问什么？")
-        with gr.Row():
-          submit_btn = gr.Button("发送")
-          clear_btn = gr.ClearButton(components = [chatbot], value = "清空问题")
-      submit_btn.click(query, inputs = [msg, chatbot], outputs = [msg, chatbot])
-  gr.close_all()
-  demo.launch(server_name = '0.0.0.0', server_port = 8082)
 
