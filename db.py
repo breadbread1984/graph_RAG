@@ -16,6 +16,7 @@ from prompts import extract_triplets_template, cypher_generation_template, entit
 
 class DocDatabase(object):
   def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', database = 'neo4j', locally = False):
+    self.tokenizer, self.llm = Llama3(self.locally)
     self.locally = locally
     self.neo4j = Neo4jGraph(url = host, username = username, password = password, database = database)
     self.update_types()
@@ -45,10 +46,9 @@ class DocDatabase(object):
     split_docs = text_splitter.split_documents(docs)
     # 3) extract triplets from documents
     print('extract triplets from documents')
-    tokenizer, llm = Llama3(self.locally)
-    prompt, _ = extract_triplets_template(tokenizer)
+    prompt, _ = extract_triplets_template(self.tokenizer)
     graph = LLMGraphTransformer(
-              llm = llm,
+              llm = self.llm,
               prompt = prompt
             ).convert_to_graph_documents(split_docs)
     self.neo4j.add_graph_documents(graph)
@@ -62,9 +62,8 @@ class DocDatabase(object):
 
   def query(self, question):
     # 1) extract entities of known entity types
-    tokenizer, llm = Llama3(self.locally)
-    prompt = entity_generation_template(tokenizer, self.entity_types)
-    chain = prompt | llm
+    prompt = entity_generation_template(self.tokenizer, self.entity_types)
+    chain = prompt | self.llm
     entities = chain.invoke({'question': question})
     entities = eval(entities)
     print(entities)
@@ -81,8 +80,8 @@ class DocDatabase(object):
         triplets.extend([(match['b']['id'],match['r'][1],match['a']['id']) for match in matches])
     print(triplets)
     # 3) ask llm for answer according to matched triplets
-    prompt = triplets_qa_template(tokenizer, triplets)
-    chain = prompt | llm
+    prompt = triplets_qa_template(self.tokenizer, triplets)
+    chain = prompt | self.llm
     answer = chain.invoke({'question': question})
     return answer
 
