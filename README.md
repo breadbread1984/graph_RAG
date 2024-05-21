@@ -6,10 +6,6 @@ this project is to implement Graph RAG algorithm with langchain
 
 ## install neo4j
 
-download and install cypher shell from [official site](https://neo4j.com/deployment-center/#tools-tab)
-
-download and install neo4j graph database self-managed community version from [official site](https://neo4j.com/deployment-center/#gdb-tab)
-
 download jar of apoc from [official github](https://github.com/neo4j/apoc/releases/tag/5.19.0)
 
 download jar of neosemantics from [official github](https://github.com/neo4j-labs/neosemantics/releases)
@@ -17,9 +13,10 @@ download jar of neosemantics from [official github](https://github.com/neo4j-lab
 install neo4j with the following commands
 
 ```shell
-sudo apt install daemon
-sudo dpkg -i cypher-shell_x.xx.x_all.deb
-sudo dpkg -i neo4j_x.xx.x_all.deb
+wget -O - https://debian.neo4j.com/neotechnology.gpg.key | sudo apt-key add -
+echo 'deb https://debian.neo4j.com stable latest' | sudo tee /etc/apt/sources.list.d/neo4j.list
+sudo apt update
+sudo apt install daemon cypher-shell neo4j
 cp <path/to/downloaded/apoc/jar> /var/lib/neo4j/plugins
 cp <path/to/downloaded/neosemantics/jar> /var/lib/neo4j/plugins
 sudo echo "dbms.directories.plugins=/var/lib/neo4j/plugins" >> /etc/neo4j/neo4j.conf
