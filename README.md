@@ -20,7 +20,7 @@ sudo dpkg -i cypher-shell_x.xx.x_all.deb
 sudo dpkg -i neo4j_x.xx.x_all.deb
 cp <path/to/downloaded/neosemantics/jar> /var/lib/neo4j/plugins
 sudo echo "dbms.unmanaged_extension_classes=n10s.endpoint=/rdf" >> /etc/neo4j/neo4j.conf
-sudo echo "dbms.default_listen_address=0.0.0.0" >> /etc/neo4j/neo4j.conf
+sudo echo "server.default_listen_address=0.0.0.0" >> /etc/neo4j/neo4j.conf
 sudo systemctl start neo4j
 sudo systemctl status neo4j
 ```
