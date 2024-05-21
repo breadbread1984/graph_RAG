@@ -93,7 +93,7 @@ if doc_dir argument is provided the knowledge graph is extracted from the docume
 # Other Information
 
 ## View neo4j Database
-Open browser using URL: http://103.6.49.76:7474/browser/
+Open browser using URL: http://localhost:7474
 
 ## some queries you may try
 
