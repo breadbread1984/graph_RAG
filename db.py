@@ -16,8 +16,8 @@ from prompts import extract_triplets_template, cypher_generation_template, entit
 
 class DocDatabase(object):
   def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', database = 'neo4j', locally = False):
-    self.tokenizer, self.llm = Llama3(self.locally)
     self.locally = locally
+    self.tokenizer, self.llm = Llama3(self.locally)
     self.neo4j = Neo4jGraph(url = host, username = username, password = password, database = database)
     self.update_types()
 
