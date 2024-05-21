@@ -22,6 +22,7 @@ sudo dpkg -i cypher-shell_x.xx.x_all.deb
 sudo dpkg -i neo4j_x.xx.x_all.deb
 cp <path/to/downloaded/apoc/jar> /var/lib/neo4j/plugins
 cp <path/to/downloaded/neosemantics/jar> /var/lib/neo4j/plugins
+sudo echo "dbms.directories.plugins=/var/lib/neo4j/plugins" >> /etc/neo4j/neo4j.conf
 sudo echo "dbms.security.procedures.unrestricted=algo.*,apoc.*" >> /etc/neo4j/neo4j.conf
 sudo echo "dbms.unmanaged_extension_classes=n10s.endpoint=/rdf" >> /etc/neo4j/neo4j.conf
 sudo echo "server.default_listen_address=0.0.0.0" >> /etc/neo4j/neo4j.conf
@@ -30,8 +31,6 @@ sudo systemctl status neo4j
 ```
 
 start the neo4j desktop by executing **neo4j** in console.
-
-install plugins: **APOC**, **Neosemantics(n10s)**
 
 add a new dbms and add a database.
 
