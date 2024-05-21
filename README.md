@@ -6,6 +6,7 @@ this project is to implement Graph RAG algorithm with langchain
 
 ## install neo4j
 
+download and install cypher shell from [official site](https://neo4j.com/deployment-center/#tools-tab)
 download and install neo4j graph database self-managed community version from [official site](https://neo4j.com/deployment-center/#gdb-tab)
 download jar of neosemantics from [official github](https://github.com/neo4j-labs/neosemantics/releases)
 
