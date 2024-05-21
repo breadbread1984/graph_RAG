@@ -66,19 +66,19 @@ class DocDatabase(object):
     chain = prompt | self.llm
     entities = chain.invoke({'question': question})
     entities = eval(entities)
-    print(entities)
+    print('extracted entityes:', entities)
     # 2) search for triplets related to these triplets
     triplets = list()
     for entity_type, keywords in entities.items():
       if len(keywords) == 0: continue
       for keyword in keywords:
-        cypher_cmd = 'match (a:%s{id:\'%s\'})-[r]->(b) return a,r,b' % (entity_type, keyword)
+        cypher_cmd = 'match (a:%s)-[r]->(b) where tolower(a.id) contains tolower(\'%s\') return a,r,b' % (entity_type, keyword)
         matches = self.neo4j.query(cypher_cmd)
         triplets.extend([(match['a']['id'],match['r'][1],match['b']['id']) for match in matches])
-        cypher_cmd = 'match (b)-[r]->(a:%s{id:\'%s\'}) return b,r,a' % (entity_type, keyword)
+        cypher_cmd = 'match (b)-[r]->(a:%s) where tolower(a.id) contains tolower(\'%s\') return b,r,a' % (entity_type, keyword)
         matches = self.neo4j.query(cypher_cmd)
         triplets.extend([(match['b']['id'],match['r'][1],match['a']['id']) for match in matches])
-    print(triplets)
+    print('matched triplets:', triplets)
     # 3) ask llm for answer according to matched triplets
     prompt = triplets_qa_template(self.tokenizer, triplets)
     chain = prompt | self.llm
