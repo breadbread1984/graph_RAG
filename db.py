@@ -12,7 +12,7 @@ from langchain.output_parsers import ResponseSchema, StructuredOutputParser
 from langchain.graphs import Neo4jGraph
 from langchain_experimental.graph_transformers.llm import LLMGraphTransformer
 from models import ChatGLM3, Llama2, Llama3, CodeLlama
-from prompts import extract_triplets_template, cypher_generation_template
+from prompts import extract_triplets_template, cypher_generation_template, entity_generation_template, triplets_qa_template
 
 class DocDatabase(object):
   def __init__(self, username = 'neo4j', password = None, host = 'bolt://localhost:7687', database = 'neo4j', locally = False):
@@ -61,6 +61,34 @@ class DocDatabase(object):
     self.update_types()
 
   def query(self, question):
+    # 1) extract entities of known entity types
+    tokenizer, llm = Llama3(self.locally)
+    prompt = entity_generation_template(tokenizer, self.entity_types)
+    chain = prompt | llm
+    entities = chain.invoke({'question': question})
+    entities = eval(entities)
+    print(entities)
+    # 2) search for triplets related to these triplets
+    triplets = list()
+    for entity_type, keywords in entities.items():
+      if len(keywords) == 0: continue
+      for keyword in keywords:
+        cypher_cmd = 'match (a:%s{id:\'%s\'})-[r]->(b) return a,r,b' % (entity_type, keyword)
+        matches = self.neo4j.query(cypher_cmd)
+        triplets.extend([(match['a']['id'],match['r'][1],match['b']['id']) for match in matches])
+        cypher_cmd = 'match (b)-[r]->(a:%s{id:\'%s\'}) return b,r,a' % (entity_type, keyword)
+        matches = self.neo4j.query(cypher_cmd)
+        triplets.extend([(match['b']['id'],match['r'][1],match['a']['id']) for match in matches])
+    print(triplets)
+    # 3) ask llm for answer according to matched triplets
+    prompt = triplets_qa_template(tokenizer, triplets)
+    chain = prompt | llm
+    answer = chain.invoke({'question': question})
+    return answer
+
+  '''
+  def query(self, question):
+    # generation cypher from question automatically by codellama
     tokenizer, llm = CodeLlama(self.locally)
     prompt = cypher_generation_template(tokenizer, self.neo4j, self.entity_types)
     chain = prompt | llm
@@ -91,4 +119,5 @@ class DocDatabase(object):
     print('rewritten cypher: ', cypher_cmd)
     data = self.neo4j.query(cypher_cmd)
     return data
+  '''
 
