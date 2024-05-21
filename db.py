@@ -72,10 +72,12 @@ class DocDatabase(object):
     for entity_type, keywords in entities.items():
       if len(keywords) == 0: continue
       for keyword in keywords:
-        cypher_cmd = 'match (a:`%s`)-[r]->(b) where tolower(a.id) contains tolower(\'%s\') return a,r,b' % (entity_type, keyword)
+        #cypher_cmd = 'match (a:`%s`)-[r]->(b) where tolower(a.id) contains tolower(\'%s\') return a,r,b' % (entity_type, keyword)
+        cypher_cmd = 'match (a)-[r]->(b) where tolower(a.id) contains tolower(\'%s\') return a,r,b' % (keyword)
         matches = self.neo4j.query(cypher_cmd)
         triplets.extend([(match['a']['id'],match['r'][1],match['b']['id']) for match in matches])
-        cypher_cmd = 'match (b)-[r]->(a:`%s`) where tolower(a.id) contains tolower(\'%s\') return b,r,a' % (entity_type, keyword)
+        #cypher_cmd = 'match (b)-[r]->(a:`%s`) where tolower(a.id) contains tolower(\'%s\') return b,r,a' % (entity_type, keyword)
+        cypher_cmd = 'match (b)-[r]->(a) where tolower(a.id) contains tolower(\'%s\') return b,r,a' % (keyword)
         matches = self.neo4j.query(cypher_cmd)
         triplets.extend([(match['b']['id'],match['r'][1],match['a']['id']) for match in matches])
     print('matched triplets:', triplets)
