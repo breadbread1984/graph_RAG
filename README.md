@@ -10,6 +10,8 @@ download and install cypher shell from [official site](https://neo4j.com/deploym
 
 download and install neo4j graph database self-managed community version from [official site](https://neo4j.com/deployment-center/#gdb-tab)
 
+download jar of apoc from [official github](https://github.com/neo4j/apoc/releases/tag/5.19.0)
+
 download jar of neosemantics from [official github](https://github.com/neo4j-labs/neosemantics/releases)
 
 install neo4j with the following commands
@@ -18,6 +20,7 @@ install neo4j with the following commands
 sudo apt install daemon
 sudo dpkg -i cypher-shell_x.xx.x_all.deb
 sudo dpkg -i neo4j_x.xx.x_all.deb
+cp <path/to/downloaded/apoc/jar> /var/lib/neo4j/plugins
 cp <path/to/downloaded/neosemantics/jar> /var/lib/neo4j/plugins
 sudo echo "dbms.unmanaged_extension_classes=n10s.endpoint=/rdf" >> /etc/neo4j/neo4j.conf
 sudo echo "server.default_listen_address=0.0.0.0" >> /etc/neo4j/neo4j.conf
