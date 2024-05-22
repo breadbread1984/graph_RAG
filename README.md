@@ -99,5 +99,20 @@ Open browser using URL: http://localhost:7474
 
 | query|
 |------|
-|Where is Berkeley university?|
-|Which university is found in 1868?|
+|what does sodium produce when it reacts with chlorine?|
+|what is the application of sodium chloride?|
+|what is deoxyribose?|
+|what are the nitrogenous bases?|
+|what is found in plant cells?|
+|why photosynthesis is essential?|
+|what is equation of photosynthesis?|
+|how the periodic table is organized?|
+|why the periodic table is important?|
+|what is the purpose of electrolysis?|
+|what is Henderson-Hasselbalch equation used for?|
+|what is a catalysis process?|
+|what is the purpose of Zeigler-Natta?|
+|what is enzymes?|
+|what is chemical bonding?|
+|what is Covalent bonds?|
+|what does the strength of a chemical bond depend on?|
