@@ -17,8 +17,8 @@ wget -O - https://debian.neo4j.com/neotechnology.gpg.key | sudo apt-key add -
 echo 'deb https://debian.neo4j.com stable latest' | sudo tee /etc/apt/sources.list.d/neo4j.list
 sudo apt update
 sudo apt install daemon cypher-shell neo4j
-cp <path/to/downloaded/apoc/jar> /var/lib/neo4j/plugins
-cp <path/to/downloaded/neosemantics/jar> /var/lib/neo4j/plugins
+sudo cp <path/to/downloaded/apoc/jar> /var/lib/neo4j/plugins
+sudo cp <path/to/downloaded/neosemantics/jar> /var/lib/neo4j/plugins
 sudo echo "dbms.directories.plugins=/var/lib/neo4j/plugins" >> /etc/neo4j/neo4j.conf
 sudo echo "dbms.security.procedures.unrestricted=algo.*,apoc.*" >> /etc/neo4j/neo4j.conf
 sudo echo "dbms.unmanaged_extension_classes=n10s.endpoint=/rdf" >> /etc/neo4j/neo4j.conf
