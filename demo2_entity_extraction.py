@@ -23,9 +23,23 @@ def main(unused_argv):
   prompt = entity_generation_template(tokenizer, entity_types)
   chain = prompt | llm
   def query(question, history):
-    cypher_cmd = chain.invoke({'question': question})
+    entities = chain.invoke({'question': question})
     print(prompt.format_prompt(question = question).to_string())
-    history.append((question, cypher_cmd))
+    history.append((question, entities))
+    entities = eval(entities)
+    triplets = list()
+    for entity_type, keywords in entities.items():
+      if len(keywords) == 0: continue
+      for keyword in keywords:
+        #cypher_cmd = 'match (a:`%s`)-[r]->(b) where tolower(a.id) contains tolower(\'%s\') return a,r,b' % (entity_type, keyword)
+        cypher_cmd = 'match (a)-[r]->(b) where tolower(a.id) contains tolower(\'%s\') return a,r,b' % (keyword)
+        matches = neo4j.query(cypher_cmd)
+        triplets.extend([(match['a']['id'],match['r'][1],match['b']['id']) for match in matches])
+        #cypher_cmd = 'match (b)-[r]->(a:`%s`) where tolower(a.id) contains tolower(\'%s\') return b,r,a' % (entity_type, keyword)
+        cypher_cmd = 'match (b)-[r]->(a) where tolower(a.id) contains tolower(\'%s\') return b,r,a' % (keyword)
+        matches = neo4j.query(cypher_cmd)
+        triplets.extend([(match['b']['id'],match['r'][1],match['a']['id']) for match in matches])
+    print('\n\nmatched triplets:', triplets)
     return "", history
   block = gr.Blocks()
   with block as demo:
