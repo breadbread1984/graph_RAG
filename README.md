@@ -48,7 +48,7 @@ except NotImplementedError:
 to
 
 ```python
-except
+except:
 ```
 
 edit line 595 of **<path/to/site-packages>/langchain_experimental/graph_transformers/llm.py** to change the code from
