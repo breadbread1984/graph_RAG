@@ -23,6 +23,8 @@ sudo echo "dbms.directories.plugins=/var/lib/neo4j/plugins" >> /etc/neo4j/neo4j.
 sudo echo "dbms.security.procedures.unrestricted=algo.*,apoc.*" >> /etc/neo4j/neo4j.conf
 sudo echo "dbms.unmanaged_extension_classes=n10s.endpoint=/rdf" >> /etc/neo4j/neo4j.conf
 sudo echo "server.default_listen_address=0.0.0.0" >> /etc/neo4j/neo4j.conf
+sudo echo "apoc.export.file.enabled=true" >> /etc/neo4j/apoc.conf
+sudo echo "apoc.import.file.enabled=true" >> /etc/neo4j/apoc.conf
 sudo systemctl start neo4j
 sudo systemctl status neo4j
 ```
